@@ -392,8 +392,8 @@ input:focus-visible {
   top: 0;
   bottom: 0;
   width: 100px;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-repeat: repeat-y;
+  background-size: 100% auto;
   pointer-events: none;
 }
 
@@ -567,8 +567,8 @@ input:focus-visible {
   top: 0;
   bottom: 0;
   width: 110px;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-repeat: repeat-y;
+  background-size: 100% auto;
   z-index: 0;
   pointer-events: none;
 }
