@@ -1,0 +1,1215 @@
+/* ============================================================
+   Design tokens
+   ============================================================ */
+:root {
+  --bg:        #FAF7F2;   /* warm linen */
+  --surface:   #F1EAE0;   /* slightly deeper cream, for cards */
+  --ink:       #2B2320;   /* deep espresso, near-black */
+  --muted:     #8A7F72;   /* warm taupe, secondary text */
+  --wine:      #6B2737;   /* deep wine, primary accent */
+  --gold:      #B99456;   /* antique gold, detail/divider */
+  --line:      #E3D9CB;   /* hairline rule color */
+
+  --serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --sans:  "Work Sans", -apple-system, "Segoe UI", sans-serif;
+
+  --max-width: 980px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--wine); }
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 3px;
+}
+
+.wrap {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero {
+  padding: 88px 24px 56px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-eyebrow {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(38px, 7vw, 62px);
+  line-height: 1.05;
+  margin: 0 0 18px;
+  letter-spacing: -0.01em;
+}
+
+.hero-rule {
+  width: 40px;
+  height: 2px;
+  background: var(--gold);
+  margin: 0 auto 20px;
+  border: none;
+}
+
+.hero p.sub {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 46ch;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   Guest lookup (shown when no valid code is present)
+   ============================================================ */
+.lookup {
+  max-width: 420px;
+  margin: 40px auto 0;
+  padding: 28px 28px 32px;
+  background: var(--surface);
+  border-radius: 4px;
+}
+
+.lookup h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 21px;
+  margin: 0 0 6px;
+}
+
+.lookup p {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 0 0 18px;
+}
+
+.lookup form {
+  display: flex;
+  gap: 10px;
+}
+
+.lookup input[type="text"] {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: 16px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.lookup input[type="text"]::placeholder { color: #B2A99C; }
+
+.btn {
+  padding: 12px 20px;
+  background: var(--wine);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover { background: #5A1F2F; }
+
+.lookup-error {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--wine);
+  display: none;
+}
+
+/* ============================================================
+   Greeting (shown once a guest is recognized)
+   ============================================================ */
+.greeting {
+  text-align: center;
+  padding: 40px 24px 8px;
+  display: none;
+}
+
+.greeting p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--wine);
+  margin: 0;
+}
+
+/* ============================================================
+   Event list
+   ============================================================ */
+#events {
+  padding: 48px 0 96px;
+  display: none;
+}
+
+.event {
+  padding: 40px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.event:last-child { border-bottom: none; }
+
+.event-date {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--gold);
+  font-size: 15px;
+  margin: 0 0 6px;
+}
+
+.event h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 28px;
+  margin: 0 0 4px;
+}
+
+.event .location {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 0 0 18px;
+}
+
+.event .location.has-attire { margin-bottom: 6px; }
+
+.event .attire {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 0 0 18px;
+}
+
+.event .attire strong { font-weight: 600; }
+
+.event .description {
+  margin: 0 0 20px;
+  max-width: 62ch;
+}
+
+.event img.event-media {
+  width: 100%;
+  max-width: 750px;
+  display: block;
+  border-radius: 4px;
+  margin: 0 0 20px;
+}
+
+.event .event-credit {
+  font-size: 12px;
+  color: var(--muted);
+  margin: -12px 0 20px;
+}
+
+.event .embed-wrap {
+  position: relative;
+  margin: 0 0 20px;
+}
+
+.event iframe.event-embed {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  display: block;
+}
+
+.event .embed-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.event .embed-fullscreen-btn:hover {
+  border-color: var(--wine);
+  color: var(--wine);
+}
+
+/* On phones, let the event photo/gif and the Storyline embed bleed
+   past the page's side padding to use the full screen width, and
+   give the embed a taller shape since 16:9 reads as cramped on a
+   narrow, tall phone screen. */
+@media (max-width: 640px) {
+  .event img.event-media,
+  .event .embed-wrap {
+    width: calc(100% + 48px);
+    margin-left: -24px;
+    margin-right: -24px;
+    border-radius: 0;
+  }
+
+  .event iframe.event-embed {
+    aspect-ratio: 3 / 4;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .event .embed-fullscreen-btn {
+    margin-left: 24px;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  padding: 60px 24px;
+  display: none;
+}
+
+/* ============================================================
+   Site nav (shared across all pages)
+   ============================================================ */
+.site-nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 12px 32px;
+  padding: 24px 24px 0;
+}
+
+.site-nav a {
+  color: inherit;
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  opacity: 0.75;
+  padding-bottom: 4px;
+  border-bottom: 1px solid transparent;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+  opacity: 1;
+  border-bottom-color: currentColor;
+}
+
+/* Nav on plain (non-cover) pages */
+.page-nav .site-nav {
+  color: var(--ink);
+  justify-content: flex-start;
+  padding: 28px 0 0;
+}
+
+.page-nav .wrap { padding-top: 0; }
+
+/* ============================================================
+   Split hero (home page) — image left, content right
+   ============================================================ */
+.hero-split {
+  display: flex;
+  min-height: 100vh;
+  align-items: stretch;
+}
+
+.hero-split-image {
+  position: relative;
+  flex: 1 1 50%;
+  background-color: var(--surface);
+  background-size: cover;
+  background-position: center;
+}
+
+.cover-credit {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 3px 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 3px;
+}
+
+.cover-credit[hidden] { display: none; }
+
+.hero-split-content {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 48px 48px;
+  overflow-y: auto;
+}
+
+.hero-split-content {
+  position: relative;
+}
+
+/* Decorative pillars flanking the text column (only when a
+   PageBorderImage is set, and only on wide screens). */
+.hero-border {
+  display: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+.hero-border-left {
+  left: 0;
+}
+
+.hero-border-right {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+@media (min-width: 1280px) {
+  .hero-border.has-image {
+    display: block;
+  }
+
+  .hero-split-content.has-borders {
+    padding-left: 116px;
+    padding-right: 116px;
+  }
+}
+
+.hero-split-content .site-nav {
+  max-width: 440px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 24px 0 0;
+}
+
+.hero-split-inner {
+  max-width: 440px;
+  margin: 0 auto;
+  padding-top: 24px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.hero-split-inner.ready {
+  opacity: 1;
+}
+
+.hero-split-inner .hero-eyebrow { color: var(--muted); }
+.hero-split-inner h1 { color: var(--ink); }
+
+.countdown {
+  display: flex;
+  gap: 24px;
+  margin-top: 28px;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+}
+
+.countdown-num {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(24px, 4vw, 34px);
+  line-height: 1;
+  color: var(--wine);
+}
+
+.countdown-label {
+  font-size: 12px;
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+.venue-details {
+  margin-top: 20px;
+}
+
+.venue-details p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--ink);
+  margin: 0 0 6px;
+}
+
+.venue-map-link {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--wine);
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+}
+
+.venue-map-link:hover {
+  border-bottom-color: var(--wine);
+}
+
+.hero-split .lookup {
+  margin: 28px 0 0;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  max-width: none;
+}
+
+@media (max-width: 900px) {
+  .hero-split {
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .hero-split-image {
+    flex: none;
+    height: 42vh;
+    min-height: 260px;
+  }
+
+  .hero-split-content {
+    flex: none;
+    padding: 0 24px 40px;
+    overflow-y: visible;
+  }
+
+  .hero-split-inner {
+    max-width: none;
+  }
+
+  .countdown { gap: 16px; }
+  .countdown-unit { min-width: 48px; }
+}
+
+/* ============================================================
+   Secondary page banner (smaller than the homepage cover)
+   ============================================================ */
+.page-banner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 4px;
+  margin: 8px 0 0;
+  background: var(--surface);
+}
+
+.page-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Party page banner only: letterboxed so the full GIF shows with
+   nothing cropped, instead of cover-cropping like the other pages. */
+.page-banner.letterbox {
+  background: #000;
+}
+
+.page-banner.letterbox img {
+  object-fit: contain;
+}
+
+@media (max-width: 520px) {
+  .page-banner { height: 220px; }
+}
+
+/* ============================================================
+   Decorative page border (inside pages only, wide screens only)
+   ============================================================ */
+.page-border {
+  display: none;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 110px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.page-border-left {
+  left: 0;
+}
+
+.page-border-right {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+@media (min-width: 1200px) {
+  .page-border.has-image {
+    display: block;
+  }
+}
+
+/* ============================================================
+   Simple content pages (Our story / FAQs)
+   ============================================================ */
+.page-header {
+  padding: 48px 0 8px;
+}
+
+.page-header h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(32px, 6vw, 48px);
+  margin: 0 0 10px;
+}
+
+.page-header .hero-rule {
+  margin: 0 0 20px;
+}
+
+.prose {
+  padding: 24px 0 80px;
+  max-width: 62ch;
+}
+
+.prose h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 24px;
+  margin: 40px 0 12px;
+}
+
+.prose h2:first-child { margin-top: 0; }
+
+.prose p { margin: 0 0 16px; }
+
+.prose img {
+  width: 100%;
+  border-radius: 4px;
+  margin: 16px 0 24px;
+}
+
+/* ============================================================
+   Wedding party grid
+   ============================================================ */
+.party-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px 24px;
+  padding: 24px 0 80px;
+}
+
+.party-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  background: var(--surface);
+}
+
+.party-card h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 19px;
+  margin: 0 0 2px;
+}
+
+.party-card .role {
+  color: var(--gold);
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.party-card .bio {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+@media (max-width: 520px) {
+  .party-grid { grid-template-columns: 1fr 1fr; gap: 24px 16px; }
+}
+
+/* ============================================================
+   FAQ accordion
+   ============================================================ */
+.faq-list {
+  padding: 24px 0 80px;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-item summary {
+  padding: 20px 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 18px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::after {
+  content: "+";
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 22px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.faq-item[open] summary::after { content: "–"; }
+
+.faq-item .answer {
+  color: var(--muted);
+  padding: 0 0 20px;
+  max-width: 62ch;
+}
+
+/* ============================================================
+   RSVP form
+   ============================================================ */
+.rsvp-form {
+  padding: 24px 0 96px;
+  display: none;
+}
+
+.rsvp-event {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.rsvp-event .event-date {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--gold);
+  font-size: 15px;
+  margin: 0 0 6px;
+}
+
+.rsvp-event h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 24px;
+  margin: 0 0 4px;
+}
+
+.rsvp-event .location {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 0 0 16px;
+}
+
+.rsvp-field {
+  margin-bottom: 16px;
+}
+
+.rsvp-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.rsvp-radios {
+  display: flex;
+  gap: 20px;
+}
+
+.rsvp-radios label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.rsvp-subform {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.field-optional {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.field-hint {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.reg-phone-row {
+  display: flex;
+  gap: 8px;
+  max-width: 420px;
+}
+
+.rsvp-subform .reg-phone-row select {
+  width: auto;
+  max-width: 190px;
+  flex: 0 0 auto;
+}
+
+.reg-phone-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Same look for the phone row inside the RSVP form. */
+.rsvp-field .reg-phone-row select,
+.rsvp-field .reg-phone-row input {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: 15px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.rsvp-field .reg-phone-row select {
+  width: auto;
+  max-width: 190px;
+  flex: 0 0 auto;
+}
+
+.link-button {
+  display: block;
+  margin: 16px auto 0;
+  background: none;
+  border: none;
+  color: var(--wine);
+  font-family: var(--sans);
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.link-button:hover {
+  color: #5A1F2F;
+}
+
+.rsvp-subform select {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: 15px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.decline-message {
+  margin-top: 16px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border-radius: 4px;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.pending-notice {
+  text-align: center;
+}
+
+.pending-code {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 28px;
+  color: var(--wine);
+  margin: 12px 0;
+}
+
+.rsvp-field input[type="number"],
+.rsvp-field textarea {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: 15px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.rsvp-field textarea {
+  max-width: 100%;
+  resize: vertical;
+}
+
+.rsvp-submit {
+  margin-top: 12px;
+}
+
+.rsvp-shared-notes {
+  padding-top: 28px;
+  margin-top: 8px;
+}
+
+.rsvp-shared-notes textarea {
+  max-width: 100%;
+}
+
+.rsvp-status {
+  margin-top: 14px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.rsvp-summary {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  max-width: 420px;
+}
+
+.rsvp-summary li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.rsvp-summary li:last-child { border-bottom: none; }
+
+.rsvp-summary strong {
+  color: var(--wine);
+}
+
+.rsvp-cta {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+/* ============================================================
+   Guest invitation embed (homepage)
+   ============================================================ */
+.invitation-embed {
+  display: none;
+  margin: 8px 0 40px;
+  text-align: center;
+}
+
+.invitation-frame {
+  width: 100%;
+  height: 640px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  display: block;
+  margin: 0 0 12px;
+}
+
+.invitation-credit {
+  font-size: 12px;
+  color: var(--muted);
+  margin: -6px 0 14px;
+}
+
+.invitation-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.invitation-link:hover {
+  border-color: var(--wine);
+  color: var(--wine);
+}
+
+.invitation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.invitation-download {
+  background: var(--wine);
+  border-color: var(--wine);
+  color: #fff;
+  font-weight: 600;
+}
+
+.invitation-download:hover {
+  background: #5A1F2F;
+  border-color: #5A1F2F;
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .invitation-frame {
+    width: calc(100% + 48px);
+    margin-left: -24px;
+    margin-right: -24px;
+    height: 480px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+/* ============================================================
+   Travel & stay page
+   ============================================================ */
+.travel-intro {
+  max-width: 62ch;
+  margin: 0 0 8px;
+  white-space: pre-line;
+}
+
+.travel-list {
+  padding: 0 0 80px;
+}
+
+/* Closing note at the bottom of the page (TravelOutro in Settings). */
+.travel-list.has-outro {
+  padding-bottom: 24px;
+}
+
+.travel-outro {
+  max-width: 62ch;
+  margin: 0;
+  padding-bottom: 80px;
+  white-space: pre-line;
+  color: var(--muted);
+}
+
+.travel-section h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 26px;
+  margin: 44px 0 4px;
+}
+
+.travel-item {
+  display: flex;
+  gap: 22px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.travel-section .travel-item:last-child {
+  border-bottom: none;
+}
+
+.travel-item img {
+  width: 180px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+
+.travel-body {
+  min-width: 0;
+}
+
+.travel-body h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 21px;
+  margin: 0 0 4px;
+}
+
+.travel-details {
+  color: var(--gold);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+
+.travel-desc {
+  margin: 0 0 8px;
+  max-width: 62ch;
+}
+
+.travel-address {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+
+.travel-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.travel-links a {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wine);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.travel-links a:hover {
+  border-bottom-color: var(--wine);
+}
+
+@media (max-width: 560px) {
+  .travel-item {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .travel-item img {
+    width: 100%;
+    height: 190px;
+  }
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+footer {
+  text-align: center;
+  padding: 40px 24px 60px;
+  color: var(--muted);
+  font-size: 13px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   Admin page (guest link generator)
+   ============================================================ */
+.admin-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.admin-wrap h1 {
+  font-family: var(--serif);
+  font-size: 32px;
+  margin: 0 0 8px;
+}
+
+.admin-wrap p.sub { color: var(--muted); margin: 0 0 28px; }
+
+table.link-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+table.link-table th,
+table.link-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+table.link-table th {
+  font-family: var(--sans);
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+table.link-table code {
+  font-size: 13px;
+  background: var(--surface);
+  padding: 3px 6px;
+  border-radius: 3px;
+}
+
+.copy-btn {
+  padding: 5px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.copy-btn:hover { border-color: var(--wine); color: var(--wine); }
+
+@media (max-width: 640px) {
+  .hero { padding: 64px 20px 40px; }
+  .lookup form { flex-direction: column; }
+}
+
+/* Small credit lines under images */
+.prose .image-credit {
+  font-size: 12px;
+  color: var(--muted);
+  margin: -18px 0 24px;
+}
+
+.party-card .photo-credit {
+  font-size: 11px;
+  color: var(--muted);
+  margin: -8px 0 10px;
+}
+
+.travel-body .travel-photo-credit {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 10px 0 0;
+}

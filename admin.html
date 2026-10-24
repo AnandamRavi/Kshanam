@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Guest Links — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="admin-wrap">
+  <h1>Guest links</h1>
+  <p class="sub">
+    This page reads your Guests sheet and builds each person's personal invitation
+    link automatically. Copy a link and paste it into an email, text, or WhatsApp
+    message. This page isn't linked from the main site — keep its URL to yourself
+    and whoever else is helping with invitations.
+  </p>
+
+  <p id="status">Loading guest list…</p>
+  <table class="link-table" id="link-table" style="display:none;">
+    <thead>
+      <tr><th>Name</th><th>Code</th><th>Link</th><th></th></tr>
+    </thead>
+    <tbody id="link-body"></tbody>
+  </table>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="config.js"></script>
+<script>
+async function loadGuests() {
+  const status = document.getElementById("status");
+  try {
+    const res = await fetch(CONFIG.GUESTS_CSV_URL, { cache: "no-store" });
+    const text = await res.text();
+    const { data } = Papa.parse(text, { header: true, skipEmptyLines: true });
+
+    const base = window.location.origin + window.location.pathname.replace(/admin\.html$/, "index.html");
+    const tbody = document.getElementById("link-body");
+
+    tbody.innerHTML = data
+      .filter((g) => g.Code)
+      .map((g) => {
+        const link = `${base}?g=${encodeURIComponent(g.Code)}`;
+        return `
+          <tr>
+            <td>${g.Name || ""}</td>
+            <td><code>${g.Code}</code></td>
+            <td><code>${link}</code></td>
+            <td><button class="copy-btn" onclick="navigator.clipboard.writeText('${link}'); this.textContent='Copied';">Copy</button></td>
+          </tr>
+        `;
+      })
+      .join("");
+
+    status.style.display = "none";
+    document.getElementById("link-table").style.display = "table";
+  } catch (err) {
+    status.textContent = "Couldn't load the guest list. Check that CONFIG.GUESTS_CSV_URL in config.js is set correctly.";
+    console.error(err);
+  }
+}
+loadGuests();
+</script>
+</body>
+</html>

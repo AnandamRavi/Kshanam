@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RSVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-nav">
+
+<div class="page-border page-border-left" id="page-border-left"></div>
+<div class="page-border page-border-right" id="page-border-right"></div>
+
+<div class="wrap">
+  <nav class="site-nav">
+    <a href="index.html">Home</a>
+    <a href="our-story.html" id="nav-story">Our story</a>
+    <a href="wedding-party.html" id="nav-party">Wedding party</a>
+    <a href="travel.html" id="nav-travel">Travel &amp; stay</a>
+    <a href="faq.html" id="nav-faq">FAQs</a>
+    <a href="rsvp.html" id="nav-rsvp" class="active">RSVP</a>
+  </nav>
+
+  <div class="page-banner" id="page-banner" data-settings-key="RsvpBannerImage" data-tab="RSVP_QUESTIONS_CSV_URL">
+    <img src="" alt="">
+  </div>
+
+  <div class="page-header">
+    <h1 id="rsvp-page-title">RSVP</h1>
+    <hr class="hero-rule">
+  </div>
+
+  <!-- STEP 1: Group or individual? -->
+  <div class="lookup" id="identify-box">
+    <h2 id="rsvp-lookup-heading">Find your invitation</h2>
+    <p id="rsvp-lookup-subtext">Enter your access code to RSVP for the events you're invited to.</p>
+
+    <form id="lookup-form">
+      <div class="rsvp-field">
+        <label for="code-input" id="code-label">Access code</label>
+        <input type="text" id="code-input" name="code-input" placeholder="Access code" autocomplete="off" required />
+      </div>
+      <button type="submit" class="btn">Continue</button>
+    </form>
+
+    <button type="button" class="link-button" id="show-group-form">I don't have a code — I clicked a link from a group chat</button>
+
+    <form id="group-form" class="rsvp-subform" style="display:none;">
+      <div class="rsvp-field">
+        <label for="group-select" id="group-name-label">Which group are you part of?</label>
+        <select id="group-select" required>
+          <option value="" disabled selected>Choose a group</option>
+        </select>
+      </div>
+      <div class="rsvp-field">
+        <label for="first-name-input" id="first-name-label">First name</label>
+        <input type="text" id="first-name-input" name="first-name-input" autocomplete="given-name" required>
+      </div>
+      <div class="rsvp-field">
+        <label for="last-name-input" id="last-name-label">Last name</label>
+        <input type="text" id="last-name-input" name="last-name-input" autocomplete="family-name" required>
+      </div>
+      <div class="rsvp-field" id="reg-group-code-wrap" style="display:none;">
+        <label for="reg-group-code">Group code <span class="field-optional">(optional)</span></label>
+        <input type="text" id="reg-group-code" name="reg-group-code" autocomplete="off">
+        <p class="field-hint">If your group was given a code, enter it to see your invitation straight away. No code? Leave this blank and the hosts will approve you.</p>
+      </div>
+      <div class="rsvp-field">
+        <label for="reg-email">Email address</label>
+        <input type="text" id="reg-email" name="reg-email" inputmode="email" autocomplete="email" placeholder="name@example.com">
+        <p class="field-hint">We'll email you your personal link once you're approved.</p>
+      </div>
+      <div class="rsvp-field">
+        <label for="reg-contact-value">WhatsApp number <span class="field-optional">(optional)</span></label>
+        <div class="reg-phone-row">
+          <select id="reg-country" aria-label="Country code"></select>
+          <input type="text" id="reg-contact-value" name="reg-contact-value" inputmode="tel" autocomplete="tel-national" placeholder="Phone number">
+        </div>
+      </div>
+      <button type="submit" class="btn">Continue</button>
+      <button type="button" class="link-button" id="show-code-form">← I actually have a code</button>
+    </form>
+
+    <p class="lookup-error" id="lookup-error"></p>
+  </div>
+
+  <!-- Shown to new group members after they sign up, until the host approves them -->
+  <div class="lookup pending-notice" id="pending-notice" style="display:none;">
+    <h2>Request sent</h2>
+    <p id="pending-message"></p>
+  </div>
+
+  <div class="greeting" id="greeting">
+    <p id="greeting-text"></p>
+  </div>
+
+  <div class="invitation-embed" id="invitation-embed"></div>
+
+  <form id="rsvp-form" class="rsvp-form" novalidate>
+
+    <!-- STEP 2: Attending gate -->
+    <div class="rsvp-field">
+      <label id="attending-gate-label">Do you plan to attend any of these events?</label>
+      <div class="rsvp-radios">
+        <label><input type="radio" name="attending-any" value="Yes" required> Yes</label>
+        <label><input type="radio" name="attending-any" value="No" required> No</label>
+      </div>
+    </div>
+
+    <p class="decline-message" id="decline-message" style="display:none;"></p>
+
+    <div id="attending-yes-section" style="display:none;">
+      <div id="rsvp-events"></div>
+
+      <div class="rsvp-field">
+        <label id="contact-pref-label">What's the best way to reach you?</label>
+        <div class="rsvp-radios">
+          <label><input type="radio" name="contact-method" value="WhatsApp" required> WhatsApp</label>
+          <label><input type="radio" name="contact-method" value="Email" required> Email</label>
+        </div>
+      </div>
+      <div class="rsvp-field" id="whatsapp-wrap" style="display:none;">
+        <label for="whatsapp-input" id="whatsapp-label">WhatsApp number</label>
+        <div class="reg-phone-row">
+          <select id="whatsapp-country" aria-label="Country code"></select>
+          <input type="tel" id="whatsapp-input" name="whatsapp-input" autocomplete="tel-national" placeholder="Phone number">
+        </div>
+      </div>
+      <div class="rsvp-field" id="email-wrap" style="display:none;">
+        <label for="email-input" id="email-label">Email address</label>
+        <input type="email" id="email-input" name="email-input" autocomplete="email">
+      </div>
+
+      <div class="rsvp-field">
+        <label id="out-of-town-label">Are you coming from out of town?</label>
+        <div class="rsvp-radios">
+          <label><input type="radio" name="out-of-town" value="Yes" required> Yes</label>
+          <label><input type="radio" name="out-of-town" value="No" required> No</label>
+        </div>
+      </div>
+      <div class="rsvp-field" id="accommodation-wrap" style="display:none;">
+        <label id="accommodation-label">Do you need accommodation?</label>
+        <div class="rsvp-radios">
+          <label><input type="radio" name="needs-accommodation" value="Yes"> Yes</label>
+          <label><input type="radio" name="needs-accommodation" value="No"> No</label>
+        </div>
+      </div>
+
+      <div class="rsvp-field rsvp-shared-notes">
+        <label for="rsvp-notes">Dietary restrictions or notes (optional)</label>
+        <textarea id="rsvp-notes" name="rsvp-notes" rows="3"></textarea>
+      </div>
+    </div>
+
+    <button type="submit" class="btn rsvp-submit" id="rsvp-submit" style="display:none;">Submit RSVP</button>
+    <p class="rsvp-status" id="rsvp-status"></p>
+  </form>
+
+  <div class="empty-state" id="empty-state">
+    <p>No events are attached to this invitation yet.</p>
+  </div>
+</div>
+
+<footer id="site-footer">Made with care for the people we love.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="config.js"></script>
+<script src="settings.js"></script>
+<script src="banner.js"></script>
+<script src="register.js"></script>
+<script src="rsvp.js"></script>
+</body>
+</html>
