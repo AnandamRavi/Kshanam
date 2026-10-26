@@ -161,12 +161,15 @@ function escCredit(s) {
 }
 
 function attachFullscreenButtons() {
+  const canFs = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
   document.querySelectorAll("[data-embed-fullscreen]").forEach((btn) => {
+    if (!canFs) btn.textContent = "Open full screen in new tab";
     btn.addEventListener("click", () => {
       const iframe = btn.closest(".event").querySelector("iframe.event-embed");
       if (!iframe) return;
-      if (iframe.requestFullscreen) iframe.requestFullscreen();
-      else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+      if (canFs && iframe.requestFullscreen) iframe.requestFullscreen();
+      else if (canFs && iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+      else window.open(iframe.src, "_blank", "noopener");
     });
   });
 }
