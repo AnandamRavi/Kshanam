@@ -1213,3 +1213,15 @@ table.link-table code {
   color: var(--muted);
   margin: 10px 0 0;
 }
+/* Phones held sideways: make embeds fit the screen height */
+@media (orientation: landscape) and (max-height: 500px) {
+  .event iframe.event-embed {
+    aspect-ratio: auto;
+    height: 85vh;
+    height: calc(100dvh - 16px);
+  }
+  .invitation-frame {
+    height: 85vh;
+    height: calc(100dvh - 16px);
+  }
+}
