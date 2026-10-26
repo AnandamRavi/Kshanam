@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Play-along keyboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3efe6;--ink:#1d2a2a;--mute:#5d6b6b;--panel:#e8e2d3;--accent:#c27a00;--accent2:#0f6b66;--wkey:#fffdf7;--wedge:#b9b09a;--bkey:#1b2626;--hit:#f0b43c;--next:#2aa59c;--scale:#ece3c4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b1c;--ink:#ecebe3;--mute:#9db0ae;--panel:#17292a;--accent:#f0b43c;--accent2:#3cc2b7;--wkey:#e9e6da;--wedge:#7d8a86;--bkey:#050a0a;--hit:#f0b43c;--next:#3cc2b7;--scale:#d9d5c0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1b1c;--ink:#ecebe3;--mute:#9db0ae;--panel:#17292a;--accent:#f0b43c;--accent2:#3cc2b7;--wkey:#e9e6da;--wedge:#7d8a86;--bkey:#050a0a;--hit:#f0b43c;--next:#3cc2b7;--scale:#d9d5c0;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Source Sans 3",system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 48px}
+h1{font:700 clamp(28px,5vw,40px)/1.1 "Bricolage Grotesque",system-ui,sans-serif;margin:0 0 6px}
+p.lead{margin:0 0 22px;color:var(--mute);max-width:62ch}
+.kbwrap{overflow-x:auto;padding:14px 0 18px;-webkit-overflow-scrolling:touch}
+#kb{--w:52px;--bw:32px;position:relative;display:flex;height:220px;width:max-content;margin:0 auto;user-select:none;touch-action:manipulation}
+.w{width:var(--w);height:100%;background:var(--wkey);border:1px solid var(--wedge);border-radius:0 0 7px 7px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:8px;font-size:12px;color:#33403f;cursor:pointer;transition:background .06s}
+.w.scale{background:var(--scale)}
+.b{position:absolute;top:0;width:var(--bw);height:62%;background:var(--bkey);border-radius:0 0 5px 5px;z-index:2;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;font-size:11px;color:#9bb0ad}
+.w.on,.b.on{background:var(--hit)!important;color:#1d1400}
+.w.next,.b.next{background:var(--next)!important;color:#fff;box-shadow:inset 0 0 0 3px var(--accent)}
+.w small{opacity:.7}.w b{font-weight:600}
+.sharp{color:var(--accent);font-weight:600}
+.panel{background:var(--panel);border-radius:12px;padding:18px;margin-top:10px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+label{font-weight:600}
+textarea{width:100%;min-height:96px;margin:8px 0 12px;padding:10px 12px;border-radius:8px;border:1px solid var(--wedge);background:var(--bg);color:var(--ink);font:500 16px/1.5 ui-monospace,Menlo,Consolas,monospace}
+button,select,input[type=number]{font:600 15px "Source Sans 3",system-ui,sans-serif;padding:9px 14px;border-radius:8px;border:1px solid var(--wedge);background:var(--bg);color:var(--ink);cursor:pointer}
+button.primary{background:var(--accent2);border-color:var(--accent2);color:#fff}
+button:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input[type=number]{width:84px;cursor:text}
+#status{margin:12px 0 0;min-height:1.5em;color:var(--mute);font-size:17px}
+#status.warn{color:var(--accent);font-weight:600}
+.help{margin-top:18px;color:var(--mute);font-size:15px}
+.help code{background:var(--panel);padding:1px 6px;border-radius:4px;color:var(--ink)}
+@media (max-width:560px){#kb{--w:44px;--bw:28px;height:190px}}
+</style>
+</head>
+<body>
+<main>
+<h1>Play-along keyboard</h1>
+
+<div class="row">
+  <label><input type="checkbox" id="scaleToggle" checked> Highlight G major</label>
+  <label><input type="checkbox" id="labelToggle" checked> Show key labels</label>
+  <label>Sound <select id="voice"><option value="reed">Reed</option><option value="soft">Soft</option><option value="bell">Bright</option></select></label>
+</div>
+
+<div class="kbwrap"><div id="kb" aria-label="Piano keyboard from C4 to C6"></div></div>
+
+<section class="panel" aria-labelledby="seqh">
+  <label id="seqh" for="seq">Practice sequence</label>
+  <textarea id="seq" spellcheck="false" placeholder="Paste your note lines here, like: G A B C+ D+  (+ means a higher octave). Lines that aren’t notes, such as lyrics, are ignored.">G#4 E5 E5 D#5 C#5 E5 D#5
+G#4 D#5 D#5 C#5 C5 D#5 C#5
+C#5 G#5 G#5 G#5 G#5 A5 G#5 F#5
+D#5 E5 F#5 G#5 F#5 E5 D#5 C#5 C#5 C#5 D#5 B4</textarea>
+  <div class="row">
+    <button class="primary" id="follow">Follow along</button>
+    <button id="auto">Play it for me</button>
+    <button id="stop">Stop</button>
+    <label>Tempo <input type="number" id="bpm" value="140" min="40" max="200"></label>
+    <label>Base octave <input type="number" id="oct" value="4" min="3" max="5"></label>
+    <label>Shift <input type="number" id="shift" value="0" min="-12" max="12"></label>
+    <label>Pause between lines (beats) <input type="number" id="gap" value="2" min="0" max="16" step="0.5"></label>
+  </div>
+  <p id="status" role="status">Play the song Mehndi Laga Ke Rakhna on the keyboard yourself. You can follow along or just have the keyboard play it for you.</p>
+</section>
+
+</main>
+
+<script>
+(function(){
+var NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+var LOW=60,HIGH=84,SCALE={0:1,2:1,4:1,6:1,7:1,9:1,11:1};
+var MAP={z:60,s:61,x:62,d:63,c:64,v:65,g:66,b:67,h:68,n:69,j:70,m:71,q:72,'2':73,w:74,'3':75,e:76,r:77,'5':78,t:79,'6':80,y:81,'7':82,u:83,i:84};
+var KEYOF={};for(var k in MAP)KEYOF[MAP[k]]=k.toUpperCase();
+var kb=document.getElementById('kb'),els={};
+function nm(m){return NAMES[m%12]+(Math.floor(m/12)-1)}
+function isBlack(m){return NAMES[m%12].length>1}
+var wi=0;
+for(var m=LOW;m<=HIGH;m++){
+  var d=document.createElement('div');d.dataset.m=m;
+  if(isBlack(m)){d.className='b';d.style.left='calc('+wi+' * var(--w) - var(--bw) / 2)'}
+  else{d.className='w';wi++}
+  els[m]=d;kb.appendChild(d);
+}
+function labels(){
+  var on=document.getElementById('labelToggle').checked;
+  for(var m=LOW;m<=HIGH;m++){
+    var e=els[m],ks=KEYOF[m]||'';
+    e.innerHTML=on?(isBlack(m)?'<span>'+ks+'</span>':'<small>'+ks+'</small><b'+(NAMES[m%12]==='F'?' class="sharp"':'')+'>'+nm(m)+'</b>'):'';
+  }
+}
+function scale(){
+  var on=document.getElementById('scaleToggle').checked;
+  for(var m=LOW;m<=HIGH;m++){
+    if(!isBlack(m))els[m].classList.toggle('scale',on&&SCALE[m%12]&&NAMES[m%12]!=='F');
+    else els[m].classList.toggle('scale',false);
+  }
+}
+document.getElementById('labelToggle').onchange=labels;
+document.getElementById('scaleToggle').onchange=scale;
+labels();scale();
+
+/* audio */
+var ctx=null,voices={};
+function ac(){if(!ctx){var C=window.AudioContext||window.webkitAudioContext;ctx=new C()}if(ctx.state==='suspended')ctx.resume();return ctx}
+function start(m){
+  if(voices[m])return;
+  var c=ac(),t=c.currentTime,f=440*Math.pow(2,(m-69)/12),kind=document.getElementById('voice').value;
+  var g=c.createGain(),lp=c.createBiquadFilter();
+  lp.type='lowpass';lp.frequency.value=kind==='reed'?1800:kind==='soft'?900:3600;lp.Q.value=kind==='reed'?3:0.7;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.28,t+0.025);g.gain.exponentialRampToValueAtTime(0.2,t+0.25);
+  var o1=c.createOscillator(),o2=c.createOscillator();
+  o1.type=kind==='reed'?'sawtooth':kind==='soft'?'triangle':'square';o2.type='triangle';
+  o1.frequency.value=f;o2.frequency.value=f*2;o2.detune.value=4;
+  var g2=c.createGain();g2.gain.value=0.3;
+  o1.connect(lp);o2.connect(g2);g2.connect(lp);lp.connect(g);g.connect(c.destination);
+  o1.start(t);o2.start(t);voices[m]={g:g,o:[o1,o2]};
+  els[m].classList.add('on');
+  advance(m);
+}
+function stop(m){
+  var v=voices[m];if(!v)return;var c=ctx,t=c.currentTime;
+  v.g.gain.cancelScheduledValues(t);v.g.gain.setValueAtTime(v.g.gain.value,t);v.g.gain.linearRampToValueAtTime(0,t+0.09);
+  v.o.forEach(function(o){o.stop(t+0.1)});delete voices[m];els[m].classList.remove('on');
+}
+
+/* pointer */
+kb.addEventListener('pointerdown',function(e){var t=e.target.closest('[data-m]');if(!t)return;e.preventDefault();t.setPointerCapture&&0;start(+t.dataset.m);t._d=1});
+function up(e){var t=e.target.closest&&e.target.closest('[data-m]');if(t)stop(+t.dataset.m)}
+kb.addEventListener('pointerup',up);kb.addEventListener('pointerleave',up,true);kb.addEventListener('pointercancel',up);
+/* computer keys */
+function typing(e){var n=e.target.tagName;return n==='TEXTAREA'||n==='INPUT'||n==='SELECT'}
+document.addEventListener('keydown',function(e){if(e.repeat||typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;var m=MAP[e.key.toLowerCase()];if(m!=null)start(m)});
+document.addEventListener('keyup',function(e){var m=MAP[e.key.toLowerCase()];if(m!=null)stop(m)});
+
+/* sequence */
+var seq=[],idx=0,mode=null,timers=[],st=document.getElementById('status');
+function parseLetters(txt){
+  var out=[],bad=[],o0=+document.getElementById('oct').value||4,re=/([A-Ga-g])(#?)(\+*)|(\S)/g,r;
+  txt=txt.replace(/\s+/g,'');
+  while((r=re.exec(txt))){
+    if(!r[1]){bad.push(r[4]);continue}
+    var s={C:0,D:2,E:4,F:5,G:7,A:9,B:11}[r[1].toUpperCase()]+(r[2]==='#'?1:0);
+    var m=s+12*(o0+1+r[3].length);
+    if(m<LOW||m>HIGH){bad.push(r[0]);continue}
+    out.push({m:m,b:1});
+  }
+  return {out:out,bad:bad};
+}
+function parse(txt){
+  var all=[],bad=[],skipped=0;
+  txt.split(/\n/).forEach(function(ln){
+    if(!ln.trim())return;
+    var g=+document.getElementById('gap').value;if(isNaN(g))g=2;
+    if(/^[A-Ga-g#+\s]+$/.test(ln)){var p=parseLetters(ln);all=all.concat(p.out);bad=bad.concat(p.bad);if(p.out.length&&g>0)all.push({rest:1,b:g})}
+    else{var q=parseStd(ln);if(q.bad.length)skipped++;else{all=all.concat(q.out);if(q.out.length&&g>0)all.push({rest:1,b:g})}}
+  });
+  while(all.length&&all[all.length-1].rest)all.pop();
+  return {out:all,bad:bad,skipped:skipped};
+}
+function parseStd(txt){
+  var out=[],bad=[];
+  txt.split(/[\s,]+/).filter(Boolean).forEach(function(tok){
+    var rr=/^[Rr](?::([\d.]+))?$/.exec(tok);
+    if(rr){out.push({rest:1,b:parseFloat(rr[1])||1});return}
+    var r=/^([A-Ga-g])([#b]?)(\d):?([\d.]*)$/.exec(tok);
+    if(!r){bad.push(tok);return}
+    var base={C:0,D:2,E:4,F:5,G:7,A:9,B:11}[r[1].toUpperCase()];
+    if(r[2]==='#')base++;if(r[2]==='b')base--;
+    var m=base+12*(+r[3]+1),beats=parseFloat(r[4])||1;
+    if(m<LOW||m>HIGH){bad.push(tok);return}
+    out.push({m:m,b:beats});
+  });
+  return {out:out,bad:bad};
+}
+function clearHint(){Object.keys(els).forEach(function(m){els[m].classList.remove('next')})}
+function hint(){clearHint();if(mode==='follow'&&idx<seq.length)els[seq[idx].m].classList.add('next')}
+function advance(m){
+  if(mode!=='follow'||idx>=seq.length||seq[idx].m!==m)return;
+  idx++;
+  if(idx>=seq.length){mode=null;clearHint();st.textContent='Finished. All '+seq.length+' notes played.';return}
+  st.textContent='Note '+(idx+1)+' of '+seq.length+'. Press the lit key'+(KEYOF[seq[idx].m]?' (computer key '+KEYOF[seq[idx].m]+')':'')+'.';hint();
+}
+function load(){
+  halt();
+  var p=parse(document.getElementById('seq').value);
+  var sh=+document.getElementById('shift').value||0;
+  p.out=p.out.filter(function(n){if(n.rest)return true;n.m+=sh;if(n.m<LOW||n.m>HIGH){p.bad.push('a note outside the keyboard');return false}return true});
+  if(p.bad.length){st.textContent='I couldn’t use: '+p.bad.join(', ')+'. Notes look like D, A#, or D+ (the + means higher).';st.className='warn';return null}
+  if(!p.out.some(function(n){return !n.rest})){st.textContent='No notes found yet. Paste your note lines into the box above, then try again.';st.className='warn';return null}
+  st.className='';st.dataset.skip=p.skipped?' (ignored '+p.skipped+' lines that weren’t notes)':'';
+  return p.out;
+}
+function halt(){timers.forEach(clearTimeout);timers=[];mode=null;clearHint();Object.keys(voices).forEach(function(m){stop(+m)})}
+document.getElementById('follow').onclick=function(){
+  var s=load();if(!s)return;halt();seq=s.filter(function(n){return !n.rest});idx=0;mode='follow';ac();
+  st.textContent='Loaded '+seq.length+' notes'+(st.dataset.skip||'')+'. Press the lit key'+(KEYOF[seq[0].m]?' (computer key '+KEYOF[seq[0].m]+')':'')+'.';hint();
+};
+document.getElementById('auto').onclick=function(){
+  var s=load();if(!s)return;halt();ac();mode='auto';
+  var beat=60000/(+document.getElementById('bpm').value||90),t=0;
+  st.textContent='Playing…';
+  s.forEach(function(n){
+    var dur=n.b*beat;
+    if(n.rest){t+=dur;return}
+    timers.push(setTimeout(function(){start(n.m)},t));
+    timers.push(setTimeout(function(){stop(n.m)},t+dur*0.9));
+    t+=dur;
+  });
+  timers.push(setTimeout(function(){mode=null;st.textContent='Done.'},t+50));
+};
+document.getElementById('stop').onclick=function(){halt();st.textContent='Stopped.'};
+})();
+</script>
+</body>
+</html>
