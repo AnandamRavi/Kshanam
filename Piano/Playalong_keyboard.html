@@ -38,6 +38,22 @@ input[type=number]{width:84px;cursor:text}
 .help{margin-top:18px;color:var(--mute);font-size:15px}
 .help code{background:var(--panel);padding:1px 6px;border-radius:4px;color:var(--ink)}
 @media (max-width:560px){#kb{--w:44px;--bw:28px;height:190px}}
+/* Phones held sideways: compact layout so the keyboard and controls fit on one screen */
+@media (orientation:landscape) and (max-height:500px){
+main{padding:6px 12px 10px}
+h1{display:none}
+.row{gap:6px 10px}
+.row label{font-size:14px}
+.kbwrap{padding:6px 0}
+#kb{--w:40px;--bw:24px;height:120px}
+.w{font-size:10px;padding-bottom:4px}
+.b{font-size:9px;padding-bottom:3px}
+.panel{padding:8px 10px;margin-top:4px}
+textarea{min-height:40px;height:40px;margin:4px 0 6px;padding:6px 8px;font-size:14px}
+button,select,input[type=number]{padding:5px 10px;font-size:14px}
+input[type=number]{width:64px}
+#status{margin:6px 0 0;font-size:15px;min-height:1.2em}
+}
 </style>
 </head>
 <body>
