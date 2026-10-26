@@ -45,7 +45,7 @@ h1{display:none}
 .row{gap:6px 10px}
 .row label{font-size:14px}
 .kbwrap{padding:6px 0}
-#kb{--w:40px;--bw:24px;height:120px}
+#kb{--w:min(54px,calc((100vw - 24px) / 15));--bw:calc(var(--w) * .6);height:120px}
 .w{font-size:10px;padding-bottom:4px}
 .b{font-size:9px;padding-bottom:3px}
 .panel{padding:8px 10px;margin-top:4px}
@@ -54,11 +54,26 @@ button,select,input[type=number]{padding:5px 10px;font-size:14px}
 input[type=number]{width:64px}
 #status{margin:6px 0 0;font-size:15px;min-height:1.2em}
 }
+.rotate{display:none;margin:0 0 10px;color:var(--mute);font-size:15px}
+@media (orientation:portrait) and (max-width:600px){.rotate{display:block}}
+/* Minimal view: only the keys and the Follow along / Play it for me buttons.
+   Everything else stays in the page (hidden) so the song data and settings keep working. */
+h1,.rotate,main>.row,#seqh,#seq,#stop,.panel .row>label{display:none!important}
+#status{position:absolute;width:1px;height:1px;margin:-1px;padding:0;min-height:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.panel{background:none;padding:0;margin-top:6px}
+.panel .row{justify-content:center;gap:12px}
+.panel button{font-size:17px;padding:12px 22px}
+main{padding-top:14px}
+@media (orientation:landscape) and (max-height:500px){
+.panel button{font-size:15px;padding:8px 16px}
+#kb{height:min(200px,calc(100dvh - 100px))}
+}
 </style>
 </head>
 <body>
 <main>
 <h1>Play-along keyboard</h1>
+<p class="rotate">Tip: turn your phone sideways to see the whole keyboard.</p>
 
 <div class="row">
   <label><input type="checkbox" id="scaleToggle" checked> Highlight G major</label>
