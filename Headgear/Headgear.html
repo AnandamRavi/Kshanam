@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stun us with your head gear</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--maroon:#7e2a2e;--brown:#6b2f2a;--peach:#ffe4c6;--card:#fff0d6;--line:#e2b27a;--must:#e9a820;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--peach);color:var(--brown);font:600 18px/1.4 "Cormorant Garamond",Georgia,serif}
+main{max-width:860px;margin:0 auto;padding:18px 16px 28px;display:grid;gap:14px;grid-template-columns:1fr}
+h1{font:400 clamp(28px,6vw,42px)/1.1 "DM Serif Display",Georgia,serif;color:var(--maroon);margin:0;text-align:center}
+h2{font:400 19px/1.2 "DM Serif Display",Georgia,serif;color:var(--maroon);margin:14px 0 8px}
+.stage{background:var(--card);border:1.5px solid var(--line);border-radius:22px;padding:6px;max-width:340px;width:100%;margin:0 auto}
+svg{display:block;width:100%;height:auto}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{font:600 17px "Cormorant Garamond",Georgia,serif;padding:9px 15px;border-radius:999px;border:1.5px solid var(--line);background:#fff8ea;color:var(--brown);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--maroon);border-color:var(--maroon);color:#fff4de}
+.sw{display:flex;flex-wrap:wrap;gap:10px}
+.sw button{width:38px;height:38px;border-radius:50%;border:2px solid #fff8ea;box-shadow:0 0 0 1.5px var(--line);cursor:pointer;padding:0}
+.sw button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--maroon)}
+.actions{display:flex;gap:10px;margin-top:18px}
+.actions button{font:600 18px "Cormorant Garamond",Georgia,serif;padding:11px 20px;border-radius:10px;border:1.5px solid var(--maroon);cursor:pointer;background:var(--maroon);color:#fff4de}
+.actions button.alt{background:transparent;color:var(--maroon)}
+button:focus-visible{outline:3px solid var(--must);outline-offset:2px}
+@media (orientation:landscape) and (max-height:520px){
+main{grid-template-columns:minmax(0,300px) 1fr;align-items:center;column-gap:22px;padding:8px 14px}
+h1{grid-column:1/-1;font-size:26px}
+.stage{max-width:300px}
+h2{margin:8px 0 6px;font-size:17px}
+.chips button{padding:6px 12px;font-size:16px}
+.sw button{width:32px;height:32px}
+.actions{margin-top:10px}
+.actions button{padding:8px 16px;font-size:16px}
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Stun us with your head gear!</h1>
+  <div class="stage"><svg id="fig" viewBox="0 0 300 360" role="img" aria-label="Figure wearing the chosen head gear"></svg></div>
+  <div>
+    <h2>Head gear</h2><div class="chips" id="hats"></div>
+    <h2>Colour</h2><div class="sw" id="cols"></div>
+    <h2>Skin tone</h2><div class="sw" id="skins"></div>
+    <div class="actions"><button id="rand">Surprise me</button><button class="alt" id="reset">Start over</button></div>
+  </div>
+</main>
+<script>
+(function(){
+var HATS=[["pagdi","Pagdi"],["sehra","Sehra"],["topi","Topi"],["dupatta","Dupatta & tikka"],["flowers","Flower crown"],["mukut","Mukut"],["bun","Jasmine bun"],["none","None"]];
+var COLS=["#7e2a2e","#e8741e","#e9a820","#1f7a5c","#2a4a9a","#d9627a"];
+var SKINS=["#f6d2b0","#e7b48a","#cf9468","#a8704a","#7a4a30"];
+var st={hat:"pagdi",col:COLS[0],skin:SKINS[1]};
+function shade(h,p){var n=parseInt(h.slice(1),16),a=[n>>16,(n>>8)&255,n&255].map(function(v){return Math.max(0,Math.min(255,Math.round(v*(1+p))))});return"#"+((1<<24)+(a[0]<<16)+(a[1]<<8)+a[2]).toString(16).slice(1)}
+function dot(x,y,r,f){return'<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+r+'" fill="'+f+'"/>'}
+var GOLD="#e9a820",HAIR="#1d1414";
+function hat(k,c){
+  var d=shade(c,-.28),s="";
+  if(k==="pagdi"){
+    s+='<path d="M86,136 Q82,58 150,54 Q218,58 214,136 Q150,108 86,136Z" fill="'+c+'"/>';
+    [[116,92],[100,70],[84,48]].forEach(function(o,i){s+='<path d="M'+(92+i*3)+','+(118-i*20)+' Q150,'+(o[0]-28)+' '+(208-i*3)+','+(118-i*20)+'" stroke="'+d+'" stroke-width="3" fill="none"/>'});
+    s+='<path d="M86,134 Q150,106 214,134 L214,144 Q150,118 86,144Z" fill="'+GOLD+'"/>';
+    s+=dot(150,118,9,GOLD)+dot(150,118,4,"#b8434a");
+    s+='<path d="M150,108 Q138,64 166,38 Q160,70 162,108Z" fill="#fbe08a" stroke="'+GOLD+'" stroke-width="2"/>';
+  }else if(k==="sehra"){
+    s+='<path d="M92,126 Q150,92 208,126 L208,136 Q150,102 92,136Z" fill="'+c+'" stroke="'+GOLD+'" stroke-width="2"/>';
+    var cols=["#e8741e","#f4b21c","#fff4de"];
+    for(var x=98,i=0;x<=202;x+=8,i++){
+      var u=(x-150)/58,y0=136-17*(1-u*u),n=5+Math.round(4*Math.abs(Math.sin(i*1.7)))+Math.round(3*(1-Math.abs(u)));
+      for(var j=0;j<n;j++)s+=dot(x,y0+4+j*7,3.7,cols[(i+j)%3]);
+    }
+  }else if(k==="topi"){
+    s+='<path d="M90,130 L104,84 Q150,98 196,84 L210,130 Q150,110 90,130Z" fill="'+c+'"/>';
+    s+='<path d="M92,124 Q150,104 208,124" stroke="'+d+'" stroke-width="4" fill="none"/>';
+    s+='<path d="M104,84 Q150,98 196,84" stroke="'+d+'" stroke-width="3" fill="none"/>';
+  }else if(k==="dupatta"){
+    s+='<path d="M150,58 Q70,62 66,150 Q62,230 50,336 L102,336 Q106,230 104,172 Q106,110 150,100 Q194,110 196,172 Q194,230 198,336 L250,336 Q238,230 234,150 Q230,62 150,58Z" fill="'+c+'" stroke="'+GOLD+'" stroke-width="3"/>';
+    s+='<path d="M72,150 Q70,230 60,330 M228,150 Q230,230 240,330" stroke="'+d+'" stroke-width="2" fill="none" opacity=".6"/>';
+    s+='<path d="M112,122 Q150,104 188,122" stroke="'+GOLD+'" stroke-width="2" fill="none"/>';
+    s+='<line x1="150" y1="100" x2="150" y2="116" stroke="'+GOLD+'" stroke-width="2"/>';
+    s+='<path d="M150,114 q-9,10 0,20 q9,-10 0,-20z" fill="'+GOLD+'"/>'+dot(150,124,3.6,"#b8434a");
+  }else if(k==="flowers"){
+    var fc=[c,"#f4b21c","#fff4de","#e8741e"];
+    for(var a=196,m=0;a<=344;a+=14,m++){
+      var r=a*Math.PI/180,x2=150+66*Math.cos(r),y2=130+56*Math.sin(r);
+      s+='<ellipse cx="'+(x2+(m%2?9:-9)).toFixed(1)+'" cy="'+(y2+7).toFixed(1)+'" rx="9" ry="4.5" fill="#4f8a3c" transform="rotate('+(m%2?30:-30)+' '+x2.toFixed(1)+' '+y2.toFixed(1)+')"/>';
+    }
+    for(var a2=196,q=0;a2<=344;a2+=14,q++){
+      var r2=a2*Math.PI/180,x3=150+66*Math.cos(r2),y3=130+56*Math.sin(r2);
+      for(var p=0;p<5;p++){var t=p*72*Math.PI/180;s+=dot(x3+7*Math.cos(t),y3+7*Math.sin(t),6,fc[q%4])}
+      s+=dot(x3,y3,5,"#fbe08a");
+    }
+  }else if(k==="mukut"){
+    s+='<polygon points="94,120 102,70 124,96 150,56 176,96 198,70 206,120" fill="'+GOLD+'" stroke="#b8791a" stroke-width="2"/>';
+    s+='<path d="M94,108 Q150,92 206,108 L206,124 Q150,108 94,124Z" fill="#c98f12"/>';
+    s+=dot(150,82,7,c)+dot(114,96,4.5,c)+dot(186,96,4.5,c)+dot(150,56,5,"#fff4de")+dot(102,70,3.6,"#fff4de")+dot(198,70,3.6,"#fff4de");
+  }else if(k==="bun"){
+    s+=dot(150,62,30,HAIR);
+    for(var b=0;b<16;b++){var g=b/16*2*Math.PI;s+=dot(150+30*Math.cos(g),62+30*Math.sin(g),4.4,"#fffaf0")}
+    for(var e=0;e<7;e++)s+=dot(112+e*13,100-Math.sin(e/6*Math.PI)*8,4,"#fffaf0");
+    s+=dot(150,62,8,c);
+  }
+  return s;
+}
+function fig(){
+  var sk=st.skin,sd=shade(sk,-.1),s="";
+  s+='<circle cx="150" cy="190" r="146" fill="#fff6e6" stroke="#e2b27a" stroke-width="1.5"/>';
+  s+='<path d="M20,38 Q150,86 280,38" stroke="#7a4a1a" stroke-width="1.2" fill="none"/>';
+  for(var i=0;i<15;i++){var t=i/14,x=(1-t)*(1-t)*20+2*(1-t)*t*150+t*t*280,y=(1-t)*(1-t)*38+2*(1-t)*t*86+t*t*38;s+=dot(x,y,7,["#e8741e","#f4b21c","#e98a1c"][i%3])+dot(x,y,3,"#fbe08a")}
+  s+='<ellipse cx="150" cy="138" rx="63" ry="72" fill="'+HAIR+'"/>';
+  s+='<path d="M40,360 Q44,282 134,252 L166,252 Q256,282 260,360Z" fill="#7e2a2e"/>';
+  s+='<rect x="134" y="205" width="32" height="52" fill="'+sd+'"/><path d="M134,252 L150,292 L166,252Z" fill="'+sd+'"/>';
+  s+='<path d="M134,252 L150,292 L166,252" stroke="'+GOLD+'" stroke-width="3" fill="none"/>';
+  s+='<ellipse cx="94" cy="156" rx="8" ry="14" fill="'+sk+'"/><ellipse cx="206" cy="156" rx="8" ry="14" fill="'+sk+'"/>'+dot(94,174,4,GOLD)+dot(206,174,4,GOLD);
+  s+='<ellipse cx="150" cy="150" rx="56" ry="66" fill="'+sk+'"/>';
+  s+='<path d="M96,128 Q150,66 204,128 Q190,100 150,96 Q110,100 96,128Z" fill="'+HAIR+'"/>';
+  s+='<ellipse cx="131" cy="152" rx="4.5" ry="5.5" fill="#2a1a14"/><ellipse cx="169" cy="152" rx="4.5" ry="5.5" fill="#2a1a14"/>';
+  s+='<path d="M120,140 Q131,134 142,140 M158,140 Q169,134 180,140" stroke="'+HAIR+'" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  s+='<path d="M150,158 q-5,12 1,16" stroke="'+shade(sk,-.22)+'" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
+  s+='<path d="M138,186 Q150,197 162,186" stroke="#8a2b32" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
+  s+=dot(118,174,8,"#d9627a").replace('/>',' opacity=".25"/>')+dot(182,174,8,"#d9627a").replace('/>',' opacity=".25"/>');
+  s+=hat(st.hat,st.col);
+  document.getElementById("fig").innerHTML=s;
+}
+function sync(id,attr,val){
+  Array.prototype.forEach.call(document.getElementById(id).children,function(b){b.setAttribute("aria-pressed",String(b.getAttribute(attr)===val))});
+}
+function paint(){fig();sync("hats","data-v",st.hat);sync("cols","data-v",st.col);sync("skins","data-v",st.skin)}
+function mk(id,list,key,asColor){
+  var box=document.getElementById(id);
+  list.forEach(function(it){
+    var b=document.createElement("button");b.type="button";
+    var v=asColor?it:it[0];b.setAttribute("data-v",v);
+    if(asColor){b.style.background=it;b.setAttribute("aria-label",(key==="col"?"Colour ":"Skin tone ")+it)}else b.textContent=it[1];
+    b.onclick=function(){st[key]=v;paint()};box.appendChild(b);
+  });
+}
+mk("hats",HATS,"hat",false);mk("cols",COLS,"col",true);mk("skins",SKINS,"skin",true);
+document.getElementById("rand").onclick=function(){
+  var h=HATS.slice(0,7);st.hat=h[Math.floor(Math.random()*h.length)][0];
+  st.col=COLS[Math.floor(Math.random()*COLS.length)];paint();
+};
+document.getElementById("reset").onclick=function(){st={hat:"pagdi",col:COLS[0],skin:SKINS[1]};paint()};
+paint();
+})();
+</script>
+</body>
+</html>
