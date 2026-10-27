@@ -58,11 +58,12 @@ input[type=number]{width:64px}
 @media (orientation:portrait) and (max-width:600px){.rotate{display:block}}
 /* Minimal view: only the keys and the Follow along / Play it for me buttons.
    Everything else stays in the page (hidden) so the song data and settings keep working. */
-h1,.rotate,main>.row,#seqh,#seq,#stop,.panel .row>label{display:none!important}
+h1,.rotate,main>.row,#seqh,#stop,.panel .row>label{display:none!important}
 #status{position:absolute;width:1px;height:1px;margin:-1px;padding:0;min-height:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .panel{background:none;padding:0;margin-top:6px}
 .panel .row{justify-content:center;gap:12px}
 .panel button{font-size:17px;padding:12px 22px}
+#seq{display:block;margin:0 0 14px}
 main{padding-top:14px}
 @media (orientation:landscape) and (max-height:500px){
 .panel button{font-size:15px;padding:8px 16px}
@@ -85,10 +86,7 @@ main{padding-top:14px}
 
 <section class="panel" aria-labelledby="seqh">
   <label id="seqh" for="seq">Practice sequence</label>
-  <textarea id="seq" spellcheck="false" placeholder="Paste your note lines here, like: G A B C+ D+  (+ means a higher octave). Lines that aren’t notes, such as lyrics, are ignored.">G#4 E5 E5 D#5 C#5 E5 D#5
-G#4 D#5 D#5 C#5 C5 D#5 C#5
-C#5 G#5 G#5 G#5 G#5 A5 G#5 F#5
-D#5 E5 F#5 G#5 F#5 E5 D#5 C#5 C#5 C#5 D#5 B4</textarea>
+  <textarea id="seq" spellcheck="false" aria-label="Notes"></textarea>
   <div class="row">
     <button class="primary" id="follow">Follow along</button>
     <button id="auto">Play it for me</button>
@@ -98,7 +96,7 @@ D#5 E5 F#5 G#5 F#5 E5 D#5 C#5 C#5 C#5 D#5 B4</textarea>
     <label>Shift <input type="number" id="shift" value="0" min="-12" max="12"></label>
     <label>Pause between lines (beats) <input type="number" id="gap" value="2" min="0" max="16" step="0.5"></label>
   </div>
-  <p id="status" role="status">Play the song Mehndi Laga Ke Rakhna on the keyboard yourself. You can follow along or just have the keyboard play it for you.</p>
+  <p id="status" role="status"></p>
 </section>
 
 </main>
