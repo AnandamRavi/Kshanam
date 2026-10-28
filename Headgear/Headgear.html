@@ -42,6 +42,7 @@ h2{margin:8px 0 6px;font-size:17px}
   <h1>Stun us with your head gear!</h1>
   <div class="stage"><svg id="fig" viewBox="0 0 300 360" role="img" aria-label="Figure wearing the chosen head gear"></svg></div>
   <div>
+    <h2>Groom or bride?</h2><div class="chips" id="roles"></div>
     <h2>Head gear</h2><div class="chips" id="hats"></div>
     <h2>Colour</h2><div class="sw" id="cols"></div>
     <h2>Skin tone</h2><div class="sw" id="skins"></div>
@@ -53,7 +54,9 @@ h2{margin:8px 0 6px;font-size:17px}
 var HATS=[["pagdi","Pagdi"],["sehra","Sehra"],["topi","Topi"],["dupatta","Dupatta & tikka"],["flowers","Flower crown"],["mukut","Mukut"],["bun","Jasmine bun"],["none","None"]];
 var COLS=["#7e2a2e","#e8741e","#e9a820","#1f7a5c","#2a4a9a","#d9627a"];
 var SKINS=["#f6d2b0","#e7b48a","#cf9468","#a8704a","#7a4a30"];
-var st={hat:"pagdi",col:COLS[0],skin:SKINS[1]};
+var BY={groom:["pagdi","sehra","topi","mukut","none"],bride:["dupatta","flowers","bun","mukut","none"]};
+var ROLES=[["groom","Groom"],["bride","Bride"]];
+var st={role:"groom",hat:"pagdi",col:COLS[0],skin:SKINS[1]};
 function shade(h,p){var n=parseInt(h.slice(1),16),a=[n>>16,(n>>8)&255,n&255].map(function(v){return Math.max(0,Math.min(255,Math.round(v*(1+p))))});return"#"+((1<<24)+(a[0]<<16)+(a[1]<<8)+a[2]).toString(16).slice(1)}
 function dot(x,y,r,f){return'<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+r+'" fill="'+f+'"/>'}
 var GOLD="#e9a820",HAIR="#1d1414";
@@ -106,45 +109,71 @@ function hat(k,c){
   return s;
 }
 function fig(){
-  var sk=st.skin,sd=shade(sk,-.1),s="";
+  var sk=st.skin,sd=shade(sk,-.1),s="",br=st.role==="bride";
   s+='<circle cx="150" cy="190" r="146" fill="#fff6e6" stroke="#e2b27a" stroke-width="1.5"/>';
   s+='<path d="M20,38 Q150,86 280,38" stroke="#7a4a1a" stroke-width="1.2" fill="none"/>';
   for(var i=0;i<15;i++){var t=i/14,x=(1-t)*(1-t)*20+2*(1-t)*t*150+t*t*280,y=(1-t)*(1-t)*38+2*(1-t)*t*86+t*t*38;s+=dot(x,y,7,["#e8741e","#f4b21c","#e98a1c"][i%3])+dot(x,y,3,"#fbe08a")}
+  if(br)s+='<path d="M84,130 Q64,262 92,336 L208,336 Q236,262 216,130Z" fill="'+HAIR+'"/>';
   s+='<ellipse cx="150" cy="138" rx="63" ry="72" fill="'+HAIR+'"/>';
-  s+='<path d="M40,360 Q44,282 134,252 L166,252 Q256,282 260,360Z" fill="#7e2a2e"/>';
-  s+='<rect x="134" y="205" width="32" height="52" fill="'+sd+'"/><path d="M134,252 L150,292 L166,252Z" fill="'+sd+'"/>';
-  s+='<path d="M134,252 L150,292 L166,252" stroke="'+GOLD+'" stroke-width="3" fill="none"/>';
-  s+='<ellipse cx="94" cy="156" rx="8" ry="14" fill="'+sk+'"/><ellipse cx="206" cy="156" rx="8" ry="14" fill="'+sk+'"/>'+dot(94,174,4,GOLD)+dot(206,174,4,GOLD);
+  s+='<path d="M40,360 Q44,282 134,252 L166,252 Q256,282 260,360Z" fill="'+(br?"#a8283a":"#2f5d50")+'"/>';
+  s+='<rect x="134" y="205" width="32" height="52" fill="'+sd+'"/>';
+  if(br){
+    s+='<path d="M126,258 Q150,312 174,258Z" fill="'+sd+'"/>';
+    s+='<path d="M132,262 Q150,322 168,262" stroke="'+GOLD+'" stroke-width="3" fill="none"/>'+dot(150,292,5,"#fbe08a");
+    s+='<path d="M60,330 Q150,296 240,330" stroke="'+GOLD+'" stroke-width="3" fill="none" opacity=".8"/>';
+  }else{
+    s+='<path d="M134,252 L150,276 L166,252Z" fill="'+sd+'"/>';
+    s+='<path d="M126,256 Q150,236 174,256 L168,272 Q150,292 132,272Z" fill="#2f5d50" stroke="'+GOLD+'" stroke-width="2.5"/>';
+    [296,318,340].forEach(function(y){s+=dot(150,y,3.6,GOLD)});
+  }
+  s+='<ellipse cx="94" cy="156" rx="8" ry="14" fill="'+sk+'"/><ellipse cx="206" cy="156" rx="8" ry="14" fill="'+sk+'"/>';
+  if(br)s+='<path d="M94,168 l-6,20 h12z M206,168 l-6,20 h12z" fill="'+GOLD+'"/>'+dot(91,191,3,"#b8434a")+dot(209,191,3,"#b8434a");
+  else s+=dot(94,174,4,GOLD)+dot(206,174,4,GOLD);
   s+='<ellipse cx="150" cy="150" rx="56" ry="66" fill="'+sk+'"/>';
   s+='<path d="M96,128 Q150,66 204,128 Q190,100 150,96 Q110,100 96,128Z" fill="'+HAIR+'"/>';
   s+='<ellipse cx="131" cy="152" rx="4.5" ry="5.5" fill="#2a1a14"/><ellipse cx="169" cy="152" rx="4.5" ry="5.5" fill="#2a1a14"/>';
   s+='<path d="M120,140 Q131,134 142,140 M158,140 Q169,134 180,140" stroke="'+HAIR+'" stroke-width="3" fill="none" stroke-linecap="round"/>';
   s+='<path d="M150,158 q-5,12 1,16" stroke="'+shade(sk,-.22)+'" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
-  s+='<path d="M138,186 Q150,197 162,186" stroke="#8a2b32" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
+  s+='<path d="M138,186 Q150,197 162,186" stroke="'+(br?"#c0243c":"#8a2b32")+'" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
   s+=dot(118,174,8,"#d9627a").replace('/>',' opacity=".25"/>')+dot(182,174,8,"#d9627a").replace('/>',' opacity=".25"/>');
+  if(br)s+=dot(150,129,3.8,"#c01e3a")+dot(139,168,2.2,GOLD);
+  else s+='<path d="M136,181 Q150,172 164,181 Q150,185 136,181Z" fill="'+HAIR+'"/>';
   s+=hat(st.hat,st.col);
   document.getElementById("fig").innerHTML=s;
 }
-function sync(id,attr,val){
-  Array.prototype.forEach.call(document.getElementById(id).children,function(b){b.setAttribute("aria-pressed",String(b.getAttribute(attr)===val))});
+function sync(id,val){
+  Array.prototype.forEach.call(document.getElementById(id).children,function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-v")===val))});
 }
-function paint(){fig();sync("hats","data-v",st.hat);sync("cols","data-v",st.col);sync("skins","data-v",st.skin)}
-function mk(id,list,key,asColor){
-  var box=document.getElementById(id);
-  list.forEach(function(it){
-    var b=document.createElement("button");b.type="button";
-    var v=asColor?it:it[0];b.setAttribute("data-v",v);
-    if(asColor){b.style.background=it;b.setAttribute("aria-label",(key==="col"?"Colour ":"Skin tone ")+it)}else b.textContent=it[1];
-    b.onclick=function(){st[key]=v;paint()};box.appendChild(b);
+function label(k){for(var i=0;i<HATS.length;i++)if(HATS[i][0]===k)return HATS[i][1];return k}
+function buildHats(){
+  var box=document.getElementById("hats");box.innerHTML="";
+  if(BY[st.role].indexOf(st.hat)<0)st.hat=BY[st.role][0];
+  BY[st.role].forEach(function(k){
+    var b=document.createElement("button");b.type="button";b.setAttribute("data-v",k);b.textContent=label(k);
+    b.onclick=function(){st.hat=k;paint()};box.appendChild(b);
   });
 }
-mk("hats",HATS,"hat",false);mk("cols",COLS,"col",true);mk("skins",SKINS,"skin",true);
+function paint(){fig();sync("roles",st.role);sync("hats",st.hat);sync("cols",st.col);sync("skins",st.skin)}
+function mk(id,list,key){
+  var box=document.getElementById(id);
+  list.forEach(function(it){
+    var b=document.createElement("button");b.type="button";b.setAttribute("data-v",it);b.style.background=it;
+    b.setAttribute("aria-label",(key==="col"?"Colour ":"Skin tone ")+it);
+    b.onclick=function(){st[key]=it;paint()};box.appendChild(b);
+  });
+}
+ROLES.forEach(function(r){
+  var b=document.createElement("button");b.type="button";b.setAttribute("data-v",r[0]);b.textContent=r[1];
+  b.onclick=function(){st.role=r[0];buildHats();paint()};document.getElementById("roles").appendChild(b);
+});
+mk("cols",COLS,"col");mk("skins",SKINS,"skin");
 document.getElementById("rand").onclick=function(){
-  var h=HATS.slice(0,7);st.hat=h[Math.floor(Math.random()*h.length)][0];
-  st.col=COLS[Math.floor(Math.random()*COLS.length)];paint();
+  var h=BY[st.role].filter(function(k){return k!=="none"});
+  st.hat=h[Math.floor(Math.random()*h.length)];
+  st.col=COLS[Math.floor(Math.random()*COLS.length)];buildHats();paint();
 };
-document.getElementById("reset").onclick=function(){st={hat:"pagdi",col:COLS[0],skin:SKINS[1]};paint()};
-paint();
+document.getElementById("reset").onclick=function(){st={role:"groom",hat:"pagdi",col:COLS[0],skin:SKINS[1]};buildHats();paint()};
+buildHats();paint();
 })();
 </script>
 </body>
