@@ -17,6 +17,12 @@
   var nav = document.querySelector(".site-nav");
   if (!nav || nav.classList.contains("is-enhanced")) return;
 
+  // Safety check: only take over the menu if the matching styles are loaded.
+  // If an older style.css is being served (or cached), leave the menu exactly
+  // as it was rather than showing an unstyled Menu button.
+  var styled = getComputedStyle(document.documentElement).getPropertyValue("--polish-layer");
+  if (!styled || !styled.trim()) return;
+
   // Put the existing links in a container, next to a Menu button.
   var links = document.createElement("div");
   links.className = "site-nav-links";
@@ -67,6 +73,15 @@
     nav.classList.add("is-measuring");
     var tooWide = links.scrollWidth > links.clientWidth + 1;
     nav.classList.remove("is-measuring");
+    if (!tooWide) {
+      // Also fold if the links would wrap onto a second row at normal layout
+      // (catches fractional-pixel cases the width check can miss).
+      var tops = {}, kids = links.children;
+      for (var i = 0; i < kids.length; i++) {
+        if (kids[i].offsetParent !== null) tops[kids[i].offsetTop] = true;
+      }
+      tooWide = Object.keys(tops).length > 1;
+    }
     nav.classList.toggle("is-collapsed", tooWide);
     if (!tooWide) setOpen(false);
     else if (wasOpen) setOpen(true);
@@ -86,6 +101,19 @@
   window.addEventListener("resize", queueFit);
   window.addEventListener("load", queueFit);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(queueFit);
+
+  // The text column can change width after the page loads (for example when the
+  // decorative side borders are switched on), so re-measure when the menu's own
+  // width changes, not just when the window is resized.
+  if (window.ResizeObserver) {
+    var lastWidth = nav.clientWidth;
+    new ResizeObserver(function () {
+      if (nav.clientWidth !== lastWidth) {
+        lastWidth = nav.clientWidth;
+        queueFit();
+      }
+    }).observe(nav);
+  }
 
   // settings.js renames and hides links after it loads the sheet.
   if (window.MutationObserver) {

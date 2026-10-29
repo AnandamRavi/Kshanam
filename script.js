@@ -252,6 +252,39 @@ async function showIdentified(guestEvents) {
   renderInvitation(match ? match.InvitationURL : "", match ? match.InvitationCredit : "");
 
   renderEvents(guestEvents);
+  setupGreetingBar();
+}
+
+/* A slim copy of the greeting + RSVP button that slides down from the top
+   once the full greeting has scrolled out of view, so the RSVP button is
+   always one tap away while a guest reads through the events. */
+function setupGreetingBar() {
+  const greeting = document.getElementById("greeting");
+  const text = document.getElementById("greeting-text");
+  const cta = document.getElementById("rsvp-cta");
+  if (!greeting || !text || !cta) return;
+
+  let bar = document.getElementById("greeting-bar");
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.id = "greeting-bar";
+    bar.className = "greeting-bar";
+    bar.innerHTML = '<p class="greeting-bar-text"></p><a class="btn" href="rsvp.html"></a>';
+    document.body.appendChild(bar);
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        const e = entries[entries.length - 1];
+        // Show only once the greeting has gone off the TOP of the screen
+        // (not while it is still waiting below the cover image).
+        bar.classList.toggle("is-visible", !e.isIntersecting && e.boundingClientRect.bottom < 0);
+      }).observe(greeting);
+    }
+  }
+  bar.querySelector(".greeting-bar-text").textContent = text.textContent;
+  const link = bar.querySelector("a");
+  link.href = cta.href;
+  link.textContent = cta.textContent;
 }
 
 async function showGuest(code) {

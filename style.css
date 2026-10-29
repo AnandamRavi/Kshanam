@@ -171,6 +171,55 @@ input:focus-visible {
   margin: 0;
 }
 
+/* Slim greeting bar (added by script.js once the full greeting scrolls away) */
+.greeting-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 20px 10px;
+  background: rgba(250, 247, 242, 0.92);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 var(--line);
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition: transform 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.greeting-bar.is-visible {
+  transform: none;
+  visibility: visible;
+  transition: transform 0.3s ease, visibility 0s;
+}
+
+.greeting-bar-text {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.3;
+  color: var(--wine);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.greeting-bar .btn {
+  flex: none;
+  margin: 0;
+  padding: 8px 18px;
+  font-size: 14px;
+  text-decoration: none;
+}
+
 /* ============================================================
    Event list
    ============================================================ */
@@ -1234,7 +1283,10 @@ table.link-table code {
    adjust, or copy to another site. Menu behaviour: nav.js
    ============================================================ */
 
-:root { interpolate-size: allow-keywords; }  /* lets FAQ answers slide open */
+:root {
+  interpolate-size: allow-keywords;  /* lets FAQ answers slide open */
+  --polish-layer: 1;                 /* nav.js checks for this (see top of nav.js) */
+}
 
 /* ------------------------------------------------------------
    Navigation: stays in view, frosted once the page scrolls,
@@ -1243,9 +1295,9 @@ table.link-table code {
 
 /* The home text column no longer clips its contents, so the menu
    can stay pinned while the page scrolls. */
-.hero-split-content { overflow: visible; --col-pad: 48px; }
-@media (min-width: 1280px) { .hero-split-content.has-borders { --col-pad: 116px; } }
-@media (max-width: 900px)  { .hero-split-content { --col-pad: 24px; } }
+.hero-split-content { overflow: visible; --bar-bleed: 48px; }
+@media (min-width: 1280px) { .hero-split-content.has-borders { --bar-bleed: 16px; } } /* stop at the pillars */
+@media (max-width: 900px)  { .hero-split-content { --bar-bleed: 24px; } }
 
 .site-nav {
   position: sticky;
@@ -1295,10 +1347,21 @@ table.link-table code {
 .site-nav.is-stuck::before { opacity: 1; }
 
 .hero-split-content .site-nav::before {
-  left: calc(var(--col-pad) * -1);
-  right: calc(var(--col-pad) * -1);
+  left: calc(var(--bar-bleed) * -1);
+  right: calc(var(--bar-bleed) * -1);
   width: auto;
   margin-left: 0;
+}
+
+/* Inner pages: where the decorative side borders are shown, keep the
+   bar between them instead of running across them. */
+@media (min-width: 1200px) {
+  body.page-nav:has(.page-border.has-image) .site-nav::before {
+    left: -24px;
+    right: -24px;
+    width: auto;
+    margin-left: 0;
+  }
 }
 
 /* 100vw includes the scrollbar; stop that causing sideways scroll. */
