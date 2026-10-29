@@ -141,7 +141,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (currentPage === p.file) window.location.replace("index.html");
   });
 
-  if (settings.SiteTitle) document.title = settings.SiteTitle;
+  // Browser tab title: the home page shows just the site name; every other
+  // page shows "Page name | Site name", so open tabs and history are easy
+  // to tell apart. Uses SiteTitle, or the home heading if that's blank.
+  const siteName = settings.SiteTitle || settings.HeroTitle || "";
+  if (siteName) {
+    const pageHeading = document.querySelector(".page-header h1");
+    const pageName = pageHeading ? pageHeading.textContent.trim() : "";
+    document.title = pageName && currentPage !== "index" ? `${pageName} | ${siteName}` : siteName;
+  }
 
   const borderImage = resolveImageUrl(settings.PageBorderImage);
   if (borderImage) {

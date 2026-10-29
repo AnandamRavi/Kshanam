@@ -1225,3 +1225,284 @@ table.link-table code {
     height: calc(100dvh - 16px);
   }
 }
+
+
+/* ============================================================
+   POLISH LAYER
+   Navigation, button/link feedback and the FAQ accordion.
+   Kept together at the end of the file so it is easy to find,
+   adjust, or copy to another site. Menu behaviour: nav.js
+   ============================================================ */
+
+:root { interpolate-size: allow-keywords; }  /* lets FAQ answers slide open */
+
+/* ------------------------------------------------------------
+   Navigation: stays in view, frosted once the page scrolls,
+   folds into a Menu button when the links don't fit.
+   ------------------------------------------------------------ */
+
+/* The home text column no longer clips its contents, so the menu
+   can stay pinned while the page scrolls. */
+.hero-split-content { overflow: visible; --col-pad: 48px; }
+@media (min-width: 1280px) { .hero-split-content.has-borders { --col-pad: 116px; } }
+@media (max-width: 900px)  { .hero-split-content { --col-pad: 24px; } }
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.site-nav.is-enhanced {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+}
+
+.page-nav .site-nav { padding: 16px 0 12px; }
+
+/* Home: the menu is as wide as the text column; its links start in line
+   with the 440px block of text below and may run a little past it. */
+.hero-split-content .site-nav {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 20px 0 12px max(0px, calc((100% - 440px) / 2));
+}
+
+.hero-split-inner { padding-top: 12px; }
+.page-banner { margin-top: 4px; }
+
+/* Wide frosted bar, invisible until the page has scrolled. */
+.site-nav::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  z-index: -1;
+  background: rgba(250, 247, 242, 0.88);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 var(--line);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.site-nav.is-stuck::before { opacity: 1; }
+
+.hero-split-content .site-nav::before {
+  left: calc(var(--col-pad) * -1);
+  right: calc(var(--col-pad) * -1);
+  width: auto;
+  margin-left: 0;
+}
+
+/* 100vw includes the scrollbar; stop that causing sideways scroll. */
+body.page-nav { overflow-x: clip; }
+
+.site-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hero-split-content .site-nav-links { gap: 12px 20px; }
+
+.site-nav-links a { flex: none; }
+
+.site-nav.is-measuring .site-nav-links {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.site-nav a {
+  transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* The Menu button (only shown when the links are folded away). */
+.nav-toggle { display: none; }
+
+.site-nav.is-collapsed .nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.nav-toggle-icon,
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.nav-toggle-icon {
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  transition: transform 0.25s ease;
+}
+
+.nav-toggle-icon::before { transform: translateY(-6px); }
+.nav-toggle-icon::after  { transform: translateY(6px); }
+
+.site-nav.is-open .nav-toggle-icon { background: transparent; }
+.site-nav.is-open .nav-toggle-icon::before { transform: rotate(45deg); }
+.site-nav.is-open .nav-toggle-icon::after  { transform: rotate(-45deg); }
+
+/* Folded menu: a small panel under the button. */
+.site-nav.is-collapsed .site-nav-links {
+  display: none;
+  position: absolute;
+  top: 100%;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0;
+  width: max-content;
+  min-width: 210px;
+  max-width: calc(100vw - 48px);
+  padding: 6px 0;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: 0 14px 32px rgba(43, 35, 32, 0.12);
+}
+
+.site-nav.is-collapsed.is-open .site-nav-links {
+  display: flex;
+  animation: nav-panel-in 0.2s ease;
+}
+
+.site-nav.is-collapsed .site-nav-links a {
+  padding: 12px 20px;
+  border-bottom: 0;
+  opacity: 1;
+  font-size: 15px;
+}
+
+.site-nav.is-collapsed .site-nav-links a:hover { background: var(--surface); }
+
+.site-nav.is-collapsed .site-nav-links a.active {
+  color: var(--wine);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--gold);
+}
+
+@keyframes nav-panel-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ------------------------------------------------------------
+   Hover, press and focus feedback on things you can click.
+   (Cards that aren't clickable deliberately don't move.)
+   ------------------------------------------------------------ */
+.btn {
+  transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+}
+.btn:hover  { box-shadow: 0 2px 10px rgba(107, 39, 55, 0.22); }
+.btn:active { transform: translateY(1px); box-shadow: none; }
+.btn:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
+
+.link-button,
+.venue-map-link,
+.travel-links a,
+.invitation-link,
+.event .embed-fullscreen-btn,
+.copy-btn {
+  transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease,
+    transform 0.12s ease;
+}
+
+.invitation-link:active,
+.event .embed-fullscreen-btn:active,
+.copy-btn:active { transform: translateY(1px); }
+
+input:not([type="radio"]):not([type="checkbox"]),
+select,
+textarea {
+  transition: border-color 0.15s ease;
+}
+
+input:not([type="radio"]):not([type="checkbox"]):focus,
+select:focus,
+textarea:focus {
+  border-color: var(--wine);
+}
+
+/* ------------------------------------------------------------
+   FAQ accordion: plus morphs into a minus, answers ease open.
+   ------------------------------------------------------------ */
+.faq-item summary { transition: color 0.18s ease; }
+.faq-item summary:hover { color: var(--wine); }
+
+.faq-item summary:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 3px;
+}
+
+.faq-item summary::after,
+.faq-item[open] summary::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background:
+    linear-gradient(var(--gold), var(--gold)) center / 100% 1.5px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) center / 1.5px 100% no-repeat;
+  transition: background-size 0.25s ease;
+}
+
+.faq-item[open] summary::after {
+  background-size: 100% 1.5px, 1.5px 0;
+}
+
+.faq-item[open] .answer { animation: faq-in 0.3s ease both; }
+
+@keyframes faq-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Smooth height where the browser supports it; instant elsewhere. */
+@supports selector(::details-content) {
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size 0.28s ease, content-visibility 0.28s allow-discrete;
+  }
+  .faq-item[open]::details-content { block-size: auto; }
+}
+
+/* Respect "reduce motion" for the pieces above, including the
+   pseudo-elements the earlier rule at the top doesn't reach. */
+@media (prefers-reduced-motion: reduce) {
+  *::before, *::after { animation: none !important; transition: none !important; }
+  .site-nav.is-collapsed.is-open .site-nav-links { animation: none; }
+}
+@supports selector(::details-content) {
+  @media (prefers-reduced-motion: reduce) {
+    .faq-item::details-content { transition: none !important; }
+  }
+}
