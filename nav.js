@@ -1,9 +1,14 @@
 /* ==========================================================
-   nav.js — makes the top menu stay in view while scrolling, and
-   folds it into a "Menu" button whenever the links don't fit on
-   one line (small phones, or the narrow text column on the home
-   page). Works with the existing <nav class="site-nav"> markup
-   on every page; no changes to the links themselves.
+   nav.js — keeps the top menu visible on every screen size.
+
+   The menu is never hidden behind a button. It has two looks:
+   - one tidy row of links when they all fit (it stays pinned to
+     the top of the screen while the page scrolls), and
+   - a neat grid of buttons when they don't (phones, narrow
+     columns, or long page names set in the Settings sheet).
+
+   Works with the existing <nav class="site-nav"> markup on every
+   page; no changes to the links themselves.
 
    Include it on each page directly AFTER the closing </nav> tag,
    so the menu is set up before the page first paints:
@@ -19,72 +24,52 @@
 
   // Safety check: only take over the menu if the matching styles are loaded.
   // If an older style.css is being served (or cached), leave the menu exactly
-  // as it was rather than showing an unstyled Menu button.
+  // as it was rather than showing a half-styled one.
   var styled = getComputedStyle(document.documentElement).getPropertyValue("--polish-layer");
   if (!styled || !styled.trim()) return;
 
-  // Put the existing links in a container, next to a Menu button.
+  // Put the existing links in a container (needed to measure them).
   var links = document.createElement("div");
   links.className = "site-nav-links";
   links.id = "site-nav-links";
   while (nav.firstChild) links.appendChild(nav.firstChild);
-
-  var toggle = document.createElement("button");
-  toggle.type = "button";
-  toggle.className = "nav-toggle";
-  toggle.setAttribute("aria-expanded", "false");
-  toggle.setAttribute("aria-controls", "site-nav-links");
-  toggle.innerHTML =
-    '<span class="nav-toggle-icon" aria-hidden="true"></span>' +
-    '<span class="nav-toggle-label">Menu</span>';
-
-  nav.appendChild(toggle);
   nav.appendChild(links);
   nav.classList.add("is-enhanced");
+  nav.setAttribute("aria-label", "Main");
 
-  /* ---- open / close ---- */
-  function setOpen(open) {
-    nav.classList.toggle("is-open", open);
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  // Tell screen readers which page they are on.
+  Array.prototype.forEach.call(links.querySelectorAll("a.active"), function (a) {
+    a.setAttribute("aria-current", "page");
+  });
+
+  function visibleLinks() {
+    return Array.prototype.filter.call(links.children, function (el) {
+      return getComputedStyle(el).display !== "none";
+    });
   }
 
-  toggle.addEventListener("click", function () {
-    setOpen(!nav.classList.contains("is-open"));
-  });
-
-  document.addEventListener("click", function (e) {
-    if (nav.classList.contains("is-open") && !nav.contains(e.target)) setOpen(false);
-  });
-
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && nav.classList.contains("is-open")) {
-      setOpen(false);
-      toggle.focus();
-    }
-  });
-
-  /* ---- collapse only when the links genuinely don't fit ----
+  /* ---- choose the row or the grid ----
      Measured rather than tied to a screen width, so it also copes
      with longer page names set in the Settings sheet and with pages
      switched off there. */
   function fit() {
-    var wasOpen = nav.classList.contains("is-open");
-    nav.classList.remove("is-collapsed");
+    nav.classList.remove("is-grid");
     nav.classList.add("is-measuring");
     var tooWide = links.scrollWidth > links.clientWidth + 1;
     nav.classList.remove("is-measuring");
-    if (!tooWide) {
-      // Also fold if the links would wrap onto a second row at normal layout
-      // (catches fractional-pixel cases the width check can miss).
-      var tops = {}, kids = links.children;
-      for (var i = 0; i < kids.length; i++) {
-        if (kids[i].offsetParent !== null) tops[kids[i].offsetTop] = true;
-      }
-      tooWide = Object.keys(tops).length > 1;
-    }
-    nav.classList.toggle("is-collapsed", tooWide);
-    if (!tooWide) setOpen(false);
-    else if (wasOpen) setOpen(true);
+    nav.classList.toggle("is-grid", tooWide);
+
+    // Grid: 3 columns (2 when there are 4 links); a short last row
+    // stretches its final button so there is no gap.
+    var shown = visibleLinks();
+    var n = shown.length;
+    var cols = n <= 3 ? Math.max(n, 1) : (n === 4 ? 2 : 3);
+    links.style.setProperty("--nav-cols", String(cols));
+    shown.forEach(function (a, i) {
+      var want = "";
+      if (tooWide && i === n - 1 && n % cols !== 0) want = "span " + (cols - (n % cols) + 1);
+      if (a.style.gridColumn !== want) a.style.gridColumn = want;
+    });
   }
 
   var fitQueued = false;
@@ -94,6 +79,7 @@
     requestAnimationFrame(function () {
       fitQueued = false;
       fit();
+      checkStuck();
     });
   }
 
@@ -127,11 +113,12 @@
   }
 
   /* ---- "stuck" state: the frosted bar only appears once the page
-     has scrolled and the menu is pinned to the top ---- */
+     has scrolled and the one-row menu is pinned to the top ---- */
   var scrollQueued = false;
   function checkStuck() {
     scrollQueued = false;
-    var pinned = nav.getBoundingClientRect().top <= 0.5 && window.scrollY > 2;
+    var pinned = !nav.classList.contains("is-grid") &&
+      nav.getBoundingClientRect().top <= 0.5 && window.scrollY > 2;
     nav.classList.toggle("is-stuck", pinned);
   }
   window.addEventListener(

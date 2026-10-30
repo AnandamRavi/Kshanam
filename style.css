@@ -1289,13 +1289,15 @@ table.link-table code {
 }
 
 /* ------------------------------------------------------------
-   Navigation: stays in view, frosted once the page scrolls,
-   folds into a Menu button when the links don't fit.
+   Navigation: always visible, never hidden behind a button.
+   - One tidy row (pinned while scrolling) when the links fit.
+   - A grid of buttons when they don't: phones, narrow columns
+     or long page names. Behaviour: nav.js
    ------------------------------------------------------------ */
 
 /* The home text column no longer clips its contents, so the menu
    can stay pinned while the page scrolls. */
-.hero-split-content { overflow: visible; --bar-bleed: 48px; }
+.hero-split-content { overflow: visible; min-width: 0; --bar-bleed: 48px; }
 @media (min-width: 1280px) { .hero-split-content.has-borders { --bar-bleed: 16px; } } /* stop at the pillars */
 @media (max-width: 900px)  { .hero-split-content { --bar-bleed: 24px; } }
 
@@ -1306,24 +1308,24 @@ table.link-table code {
 }
 
 .site-nav.is-enhanced {
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 0;
+  display: block;
+  min-width: 0;      /* never wider than its column; nav.js switches to the grid instead */
+  padding: 14px 0 0;
 }
 
-.page-nav .site-nav { padding: 16px 0 12px; }
-
-/* Home: the menu is as wide as the text column; its links start in line
-   with the 440px block of text below and may run a little past it. */
-.hero-split-content .site-nav {
-  max-width: none;
+/* Home: as wide as the text block, a little wider so six links breathe. */
+.hero-split-content .site-nav.is-enhanced {
   width: 100%;
-  margin: 0;
-  padding: 20px 0 12px max(0px, calc((100% - 440px) / 2));
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 14px 0 0;
+}
+@media (max-width: 900px) {
+  .hero-split-content .site-nav.is-enhanced { margin: 0; }
 }
 
-.hero-split-inner { padding-top: 12px; }
-.page-banner { margin-top: 4px; }
+.hero-split-inner { padding-top: 20px; }
+.page-banner { margin-top: 16px; }
 
 /* Wide frosted bar, invisible until the page has scrolled. */
 .site-nav::before {
@@ -1335,7 +1337,7 @@ table.link-table code {
   width: 100vw;
   margin-left: -50vw;
   z-index: -1;
-  background: rgba(250, 247, 242, 0.88);
+  background: rgba(250, 247, 242, 0.92);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: 0 1px 0 var(--line);
@@ -1367,116 +1369,94 @@ table.link-table code {
 /* 100vw includes the scrollbar; stop that causing sideways scroll. */
 body.page-nav { overflow-x: clip; }
 
+/* --- One row --- */
 .site-nav-links {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px 32px;
-  flex: 1 1 auto;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 0 16px;
   min-width: 0;
+  border-bottom: 1px solid var(--line);
 }
 
-.hero-split-content .site-nav-links { gap: 12px 20px; }
-
-.site-nav-links a { flex: none; }
-
-.site-nav.is-measuring .site-nav-links {
-  flex-wrap: nowrap;
-  white-space: nowrap;
+.page-nav .site-nav-links {
+  justify-content: flex-start;
+  gap: 0 36px;
 }
 
-.site-nav a {
-  transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
+/* The bar's own hairline takes over once the menu is pinned. */
+.site-nav.is-stuck .site-nav-links { border-bottom-color: transparent; }
 
-/* The Menu button (only shown when the links are folded away). */
-.nav-toggle { display: none; }
-
-.site-nav.is-collapsed .nav-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 0;
-  background: none;
-  border: 0;
-  color: inherit;
-  font-family: var(--sans);
+.site-nav-links a {
+  position: relative;
+  flex: none;
+  display: block;
+  padding: 14px 0 15px;
+  border-bottom: 0;
+  color: var(--ink);
   font-size: 14px;
   font-weight: 500;
+  line-height: 1.2;
   letter-spacing: 0.01em;
-  cursor: pointer;
+  white-space: nowrap;
+  opacity: 0.72;
+  transition: color 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
 }
 
-.nav-toggle-icon,
-.nav-toggle-icon::before,
-.nav-toggle-icon::after {
-  width: 18px;
-  height: 2px;
-  background: currentColor;
-  border-radius: 1px;
-}
-
-.nav-toggle-icon {
-  position: relative;
-  transition: background-color 0.2s ease;
-}
-
-.nav-toggle-icon::before,
-.nav-toggle-icon::after {
+/* Underline marker: sits on the hairline. */
+.site-nav-links a::after {
   content: "";
   position: absolute;
   left: 0;
-  transition: transform 0.25s ease;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: transparent;
+  transition: background-color 0.2s ease;
 }
 
-.nav-toggle-icon::before { transform: translateY(-6px); }
-.nav-toggle-icon::after  { transform: translateY(6px); }
+.site-nav-links a:hover { opacity: 1; color: var(--wine); }
+.site-nav-links a:hover::after { background: var(--gold); }
+.site-nav-links a.active { opacity: 1; color: var(--wine); }
+.site-nav-links a.active::after { background: var(--wine); }
 
-.site-nav.is-open .nav-toggle-icon { background: transparent; }
-.site-nav.is-open .nav-toggle-icon::before { transform: rotate(45deg); }
-.site-nav.is-open .nav-toggle-icon::after  { transform: rotate(-45deg); }
-
-/* Folded menu: a small panel under the button. */
-.site-nav.is-collapsed .site-nav-links {
-  display: none;
-  position: absolute;
-  top: 100%;
-  flex-direction: column;
+/* While nav.js measures: links on one line, no wrapping. */
+.site-nav.is-measuring .site-nav-links {
+  display: flex;
+  justify-content: flex-start;
   flex-wrap: nowrap;
-  gap: 0;
-  width: max-content;
-  min-width: 210px;
-  max-width: calc(100vw - 48px);
-  padding: 6px 0;
-  background: var(--bg);
+}
+
+/* --- Grid of buttons (when the links don't fit on one row) --- */
+.site-nav.is-grid { position: static; }
+.site-nav.is-grid::before { display: none; }   /* the grid is never pinned, so no frosted bar */
+
+.site-nav.is-grid .site-nav-links {
+  display: grid;
+  grid-template-columns: repeat(var(--nav-cols, 3), minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
   border: 1px solid var(--line);
   border-radius: 4px;
-  box-shadow: 0 14px 32px rgba(43, 35, 32, 0.12);
+  overflow: hidden;
 }
 
-.site-nav.is-collapsed.is-open .site-nav-links {
+.site-nav.is-grid .site-nav-links a {
   display: flex;
-  animation: nav-panel-in 0.2s ease;
-}
-
-.site-nav.is-collapsed .site-nav-links a {
-  padding: 12px 20px;
-  border-bottom: 0;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 8px 10px;
+  background: var(--bg);
+  text-align: center;
+  white-space: normal;
   opacity: 1;
-  font-size: 15px;
 }
 
-.site-nav.is-collapsed .site-nav-links a:hover { background: var(--surface); }
-
-.site-nav.is-collapsed .site-nav-links a.active {
-  color: var(--wine);
-  font-weight: 600;
-  box-shadow: inset 2px 0 0 var(--gold);
-}
-
-@keyframes nav-panel-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: none; }
-}
+.site-nav.is-grid .site-nav-links a::after { bottom: 0; }
+.site-nav.is-grid .site-nav-links a:hover,
+.site-nav.is-grid .site-nav-links a.active { background: var(--surface); }
+.site-nav.is-grid .site-nav-links a:focus-visible { outline-offset: -4px; }
 
 /* ------------------------------------------------------------
    Hover, press and focus feedback on things you can click.
@@ -1562,7 +1542,6 @@ textarea:focus {
    pseudo-elements the earlier rule at the top doesn't reach. */
 @media (prefers-reduced-motion: reduce) {
   *::before, *::after { animation: none !important; transition: none !important; }
-  .site-nav.is-collapsed.is-open .site-nav-links { animation: none; }
 }
 @supports selector(::details-content) {
   @media (prefers-reduced-motion: reduce) {
