@@ -1,0 +1,109 @@
+/* invite.css — layout for the generated invitation (see invite.js).
+   Everything is measured in "points on a 590 pt wide card" (--u), so the
+   whole card scales with its width and prints exactly like the PDF. */
+
+.iv-wrap { max-width: 640px; margin: 0 auto; text-align: center; }
+
+.iv-deck {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  border-radius: 4px; box-shadow: 0 6px 24px rgba(60, 20, 20, .18);
+}
+.iv-deck::-webkit-scrollbar { display: none; }
+.iv-deck:focus-visible { outline: 2px solid #e8741e; outline-offset: 3px; }
+
+.iv-page {
+  flex: 0 0 100%; scroll-snap-align: center; position: relative; overflow: hidden;
+  aspect-ratio: 590 / 576; container-type: inline-size; --u: calc(100cqw / 590);
+  background-size: 100% 100%; background-position: center; background-repeat: no-repeat;
+  text-align: left; page: iv;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.iv-in { position: absolute; inset: 0; }
+
+.iv-t { margin: 0; line-height: 1.2; font-family: var(--f); font-size: calc(var(--s) * var(--u)); color: var(--c); }
+.iv-t sup { font-size: .6em; line-height: 0; vertical-align: .45em; }
+.iv-caps { text-transform: uppercase; }
+.iv-wide { letter-spacing: .26em; }
+.iv-inline { display: inline; }
+
+/* ---- cover ---- */
+.iv-cover { background-color: #7e2a2e; }
+.iv-cover-top, .iv-cover-bottom { position: absolute; left: 0; right: 0; text-align: center; padding: 0 calc(var(--u) * 50); }
+.iv-cover-top { top: calc(var(--u) * 171); }
+.iv-cover-bottom { top: calc(var(--u) * 474); }
+.iv-cover-bottom .iv-wide { letter-spacing: .18em; }
+.iv-cover-bottom .iv-t + .iv-t { margin-top: calc(var(--u) * 3); }
+.iv-names { display: flex; flex-direction: column; align-items: center; margin-top: calc(var(--u) * -4); }
+.iv-names .iv-CoverNames { line-height: .95; }
+.iv-names .iv-CoverAmp { line-height: .88; margin: calc(var(--u) * -1) 0 calc(var(--u) * 0); }
+.iv-names .iv-n1 { margin-top: calc(var(--u) * 6); }
+
+.iv-scene { background-color: #e8a030; }
+
+/* ---- cream cards ---- */
+.iv-card { background-color: #ffe4c6; }
+.iv-card::after {
+  content: ""; position: absolute; inset: calc(var(--u) * 19.5); pointer-events: none;
+  border: max(1px, calc(var(--u) * .8)) solid #b2705f;
+}
+
+/* family page */
+.iv-stack { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 calc(var(--u) * 50); }
+.iv-orn { width: calc(var(--u) * 130); aspect-ratio: 389 / 33; background: url("invite/ornament.png") center / 100% 100% no-repeat; flex: none; }
+.iv-parents { display: flex; align-items: center; justify-content: center; gap: calc(var(--u) * 18); margin-top: calc(var(--u) * 12); }
+.iv-side .iv-t { line-height: 1.3; }
+.iv-req { margin-top: calc(var(--u) * 10); }
+.iv-couple { margin-top: calc(var(--u) * 8); line-height: 1.15; }
+.iv-couple .iv-inline { margin: 0 .1em; }
+.iv-stack .iv-FamilyJoy { margin-top: calc(var(--u) * 6); }
+.iv-orn-2 { margin-top: calc(var(--u) * 22); }
+.iv-when { margin-top: calc(var(--u) * 14); }
+.iv-stack .iv-FamilyWhere { margin-top: calc(var(--u) * 2); }
+
+/* events page */
+.iv-slot { position: absolute; left: 0; right: 0; height: 50%; padding: 0 calc(var(--u) * 51) 0 calc(var(--u) * 50); --pt: 39; padding-top: calc(var(--u) * var(--pt)); }
+.iv-slot + .iv-slot { top: 50%; --pt: 18; padding-top: calc(var(--u) * 18); }
+.iv-slot + .iv-slot::before {
+  content: ""; position: absolute; top: 0; left: calc(var(--u) * 49); right: calc(var(--u) * 49);
+  border-top: max(1px, calc(var(--u) * .8)) solid #d9a98f;
+}
+.iv-icon { position: absolute; right: calc(var(--u) * 51); top: calc(var(--u) * (var(--pt) + 3)); width: calc(var(--u) * 100); height: calc(var(--u) * 100); }
+.iv-title { max-width: calc(var(--u) * 380); line-height: 1.1; margin-top: calc(var(--u) * 1); }
+.iv-desc { max-width: calc(var(--u) * 350); margin-top: calc(var(--u) * 6); line-height: 1.25; }
+.iv-edate { margin-top: calc(var(--u) * 12); }
+.iv-etime { margin-top: calc(var(--u) * 3); }
+.iv-attire { margin-top: calc(var(--u) * 11); max-width: calc(var(--u) * 400); }
+.iv-attire + .iv-attire { margin-top: calc(var(--u) * 3); }
+.iv-k { color: #6b2f2a; }
+
+/* venue block (sits in the lower half, or alone on a page) */
+.iv-slot.iv-venue { display: flex; flex-direction: column; align-items: center; text-align: center; --pt: 52; padding-top: calc(var(--u) * 41); }
+.iv-venue .iv-icon { display: none; }
+.iv-venue .iv-VenueLabel { margin-top: calc(var(--u) * 6); }
+.iv-venue .iv-VenueName { margin-top: calc(var(--u) * 4); }
+.iv-venue .iv-VenueTagline { margin-top: calc(var(--u) * 8); }
+.iv-venue-only .iv-slot { top: 0; height: 100%; justify-content: center; padding-top: 0; }
+.iv-venue-only .iv-slot::before { display: none; }
+
+/* back cover */
+.iv-back { background-color: #7e2a2e; }
+.iv-backcap { position: absolute; left: 0; right: 0; top: calc(var(--u) * 442); text-align: center; }
+
+/* controls */
+.iv-ui { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 12px 0 10px; font-family: var(--sans, sans-serif); color: var(--muted, #6b5b52); font-size: 14px; }
+.iv-nav { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line, #d8cfc6); background: transparent; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; }
+.iv-nav:hover { border-color: var(--wine, #7e2a2e); color: var(--wine, #7e2a2e); }
+.iv-actions button { cursor: pointer; font: inherit; font-size: 14px; }
+
+/* printing / "Save as PDF": one card per sheet, 590 x 576 pt like the original */
+@page iv { size: 590pt 576pt; margin: 0; }
+@media print {
+  body.iv-printing > *:not(.wrap) { display: none !important; }
+  body.iv-printing .wrap > *:not(#invitation-embed) { display: none !important; }
+  body.iv-printing .wrap { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+  body.iv-printing #invitation-embed { margin: 0 !important; }
+  body.iv-printing .iv-ui, body.iv-printing .iv-actions { display: none !important; }
+  body.iv-printing .iv-wrap { max-width: none; }
+  body.iv-printing .iv-deck { display: block; overflow: visible; box-shadow: none; border-radius: 0; }
+  body.iv-printing .iv-page { width: 590pt; height: 576pt; aspect-ratio: auto; break-after: page; break-inside: avoid; }
+}

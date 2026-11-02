@@ -249,7 +249,22 @@ async function showIdentified(guestEvents) {
   } catch (err) { console.error(err); }
   const comboKey = normalizeEventCombo(guestEvents.map((e) => e.ID).join(";"));
   const match = invitations.find((inv) => normalizeEventCombo(inv.Events) === comboKey);
-  renderInvitation(match ? match.InvitationURL : "", match ? match.InvitationCredit : "");
+  // InviteMode (Settings tab): "generated" (default) builds the invitation from the
+  // sheet; "auto" uses a PDF from the Invitations tab when one matches, otherwise
+  // generates; "pdf" keeps the old PDF-only behaviour.
+  const inviteMode = String(settings.InviteMode || "generated").trim().toLowerCase();
+  const pdfUrl = match ? (match.InvitationURL || "").trim() : "";
+  let generated = false;
+  if (window.renderGeneratedInvite && inviteMode !== "pdf" && !(inviteMode === "auto" && pdfUrl)) {
+    try {
+      generated = await window.renderGeneratedInvite({
+        container: document.getElementById("invitation-embed"),
+        events: guestEvents,
+        settings,
+      });
+    } catch (err) { console.error("Generated invitation failed:", err); }
+  }
+  if (!generated) renderInvitation(pdfUrl, match ? match.InvitationCredit : "");
 
   renderEvents(guestEvents);
   setupGreetingBar();
