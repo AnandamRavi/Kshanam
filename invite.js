@@ -34,6 +34,10 @@
     FamilyAmp:     { f: "display", s: 30,   c: "#e9a820" },
     FamilyJoy:     { f: "body",    s: 14.2, c: "#8a6a60", i: 1 },
     FamilyBlessing:{ f: "body",    s: 15,   c: "#e8741e", i: 1 },
+    SoloDate:      { f: "display", s: 23.2, c: "#7e2a2e" },
+    SoloTime:      { f: "body",    s: 16.5, c: "#8a6a60" },
+    SoloWhere:     { f: "body",    s: 16.5, c: "#6b2f2a" },
+    SoloAttire:    { f: "body",    s: 14.2, c: "#8a6a60", i: 1 },
     FamilyGrandLabel: { f: "body", s: 12,   c: "#8a6a60" },
     FamilyGrandNames: { f: "body", s: 14,   c: "#8a6a60" },
     FamilyGrandAnd:   { f: "body", s: 12,   c: "#8a6a60" },
@@ -111,6 +115,11 @@
     }
     var d = new Date(raw);
     return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+  function longDate(d, raw, loc) {
+    if (!d) return esc(raw || "");
+    return esc(d.toLocaleDateString(loc, { weekday: "long" })) + ", " + esc(d.toLocaleDateString(loc, { month: "long" })) + " " +
+      d.getDate() + "<sup>" + ordinal(d.getDate()) + "</sup>, " + d.getFullYear();
   }
   function ordinal(n) {
     var v = n % 100;
@@ -243,7 +252,7 @@
       if (!dated.length) return "";
       var a = dated[0], b = dated[dated.length - 1];
       var mo = function (d) { return d.toLocaleDateString(loc, { month: "long" }); };
-      if (+a === +b) return mo(a) + " " + a.getDate() + ", " + a.getFullYear();
+      if (+a === +b) return a.toLocaleDateString(loc, { weekday: "long" }) + ", " + mo(a) + " " + a.getDate() + ", " + a.getFullYear();
       if (a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth())
         return mo(a) + " " + a.getDate() + "\u2013" + b.getDate() + ", " + a.getFullYear();
       if (a.getFullYear() === b.getFullYear())
@@ -283,6 +292,10 @@
         (img(S.InviteSceneImage) || "invite/scene.jpg") + '\')"></section>');
     }
 
+    var solo = events.length === 1 && !isOff(S.InviteSoloCombine);
+    var suffix = isOff(S.InviteTimeSuffix) ? "" : S.InviteTimeSuffix;
+    var iconFor = function (ev) { return img(ev.InviteIcon) || "invite/icon-" + String(ev.ID || "").toLowerCase() + ".png"; };
+
     // 3. family page
     var hasSides = P.side1.length || P.side2.length;
     var side = function (arr) {
@@ -311,7 +324,7 @@
         '<div class="iv-cp">' + t("FamilyCouple", "p", esc(P.full2), "iv-cname") + grandBlock(P.grand2, S.InviteBrideGrandLabel) + "</div></div>";
     } else if (P.full1 || P.full2) {
       famHtml += t("FamilyCouple", "p",
-        esc(P.full1) + (P.full1 && P.full2 ? " " + t("FamilyAmp", "span", "&amp;", "iv-inline") + " " : "") + esc(P.full2), "iv-couple");
+        esc(P.full1) + (P.full1 && P.full2 ? t("FamilyAmp", "span", "&amp;", "iv-inline") : "") + esc(P.full2), "iv-couple");
     }
     if (P.joy.length) {
       var j = P.joy.map(esc);
@@ -319,22 +332,32 @@
         (j.length > 1 ? j.slice(0, -1).join(", ") + " " + esc(S.InviteAndText) + " " + j[j.length - 1] : j[0]));
     }
     famHtml += '<div class="iv-orn iv-orn-2"></div>';
-    if (range) famHtml += t("FamilyWhen", "p", esc(S.InviteWhenPrefix) + " " + esc(range), "iv-when");
-    if (venue) famHtml += t("FamilyWhere", "p", esc(S.InviteWherePrefix) + " " + esc(venue));
-    pages.push('<section class="iv-page iv-card iv-family" aria-label="Hosts"><div class="iv-in iv-stack">' + famHtml + "</div></section>");
+    var soloIcon = "";
+    if (solo) {
+      // one event: the event details share the family page
+      var se = events[0], sd = parseDate(se.Date), stime = fmtTime(se.Time, suffix), splace = String(se.Location || venue || "").trim();
+      famHtml += t("EventLabel", "p", esc(se.Name || ""), "iv-caps iv-wide iv-slabel") +
+        t("SoloDate", "p", esc(S.InviteWhenPrefix) + " " + longDate(sd, se.Date, loc), "iv-sdate") +
+        (stime ? t("SoloTime", "p", esc(stime), "iv-stime") : "") +
+        (splace ? t("SoloWhere", "p", esc(S.InviteWherePrefix) + " " + esc(splace), "iv-swhere") : "") +
+        (se.Attire ? t("SoloAttire", "p", '<span class="iv-k iv-attire-k">' + esc(S.InviteAttireLabel) + "</span> " + esc(se.Attire), "iv-sattire") : "");
+      if (!(P.grand1.length || P.grand2.length))
+        soloIcon = '<img class="iv-icon iv-solo-icon" src="' + iconFor(se) + '" alt="" onerror="this.style.display=\'none\'">';
+    } else {
+      if (range) famHtml += t("FamilyWhen", "p", esc(S.InviteWhenPrefix) + " " + esc(range), "iv-when");
+      if (venue) famHtml += t("FamilyWhere", "p", esc(S.InviteWherePrefix) + " " + esc(venue));
+    }
+    pages.push('<section class="iv-page iv-card iv-family" aria-label="Hosts"><div class="iv-in iv-stack' + (solo ? " iv-solo" : "") + '">' + famHtml + "</div>" +
+      (soloIcon ? '<div class="iv-in iv-soloicon">' + soloIcon + "</div>" : "") + "</section>");
 
     // 4. events (two per page) + venue block
-    var suffix = isOff(S.InviteTimeSuffix) ? "" : S.InviteTimeSuffix;
     var perEventPlace = places.length > 1;
     function eventSlot(ev) {
       var d = parseDate(ev.Date);
       var label = String(ev.InviteLabel || "").trim();
       var desc = String(ev.InviteDescription || "").trim() || firstPara(plain(ev.Description));
-      var icon = img(ev.InviteIcon) || "invite/icon-" + String(ev.ID || "").toLowerCase() + ".png";
-      var dateHtml = d
-        ? esc(d.toLocaleDateString(loc, { weekday: "long" })) + ", " + esc(d.toLocaleDateString(loc, { month: "long" })) + " " +
-          d.getDate() + "<sup>" + ordinal(d.getDate()) + "</sup>, " + d.getFullYear()
-        : esc(ev.Date || "");
+      var icon = iconFor(ev);
+      var dateHtml = longDate(d, ev.Date, loc);
       var time = fmtTime(ev.Time, suffix);
       return '<div class="iv-slot">' +
         '<img class="iv-icon" src="' + icon + '" alt="" onerror="this.style.display=\'none\'">' +
@@ -352,8 +375,8 @@
       t("VenueName", "p", esc(venue)) + (closing ? t("VenueTagline", "p", esc(closing)) : "") + "</div>";
 
     var vmode = String(S.InviteVenueBlock || "auto").toLowerCase();
-    var showVenue = !!venue && vmode !== "no" && (vmode === "yes" || (places.length <= 1 && events.length % 2 === 1));
-    var slots = events.map(eventSlot);
+    var showVenue = !solo && !!venue && vmode !== "no" && (vmode === "yes" || (places.length <= 1 && events.length % 2 === 1));
+    var slots = solo ? [] : events.map(eventSlot);
     var chunks = [];
     for (var i = 0; i < slots.length; i += 2) chunks.push(slots.slice(i, i + 2));
     if (showVenue) {

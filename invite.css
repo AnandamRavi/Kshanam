@@ -54,7 +54,7 @@
 .iv-side .iv-t { line-height: 1.3; }
 .iv-req { margin-top: calc(var(--u) * 10); }
 .iv-couple { margin-top: calc(var(--u) * 8); line-height: 1.15; }
-.iv-couple .iv-inline { margin: 0 .1em; }
+.iv-couple .iv-inline { margin: 0 .2em; }
 .iv-stack .iv-FamilyJoy { margin-top: calc(var(--u) * 6); }
 .iv-orn-2 { margin-top: calc(var(--u) * 22); }
 .iv-when { margin-top: calc(var(--u) * 14); }
@@ -119,3 +119,18 @@
 .iv-gpair { margin-top: calc(var(--u) * 3); }
 .iv-gand { margin-top: calc(var(--u) * 3); }
 .iv-couplegrid + .iv-FamilyJoy { margin-top: calc(var(--u) * 12); }
+
+/* one event: family page and event details on the same card */
+.iv-stack.iv-solo { justify-content: flex-start; padding-top: calc(var(--u) * 61); }
+.iv-solo .iv-orn-2 { margin-top: calc(var(--u) * 12); }
+.iv-slabel { margin-top: calc(var(--u) * 18); }
+.iv-sdate { line-height: 1.2; }
+.iv-stime { margin-top: calc(var(--u) * -1); }
+.iv-swhere { margin-top: calc(var(--u) * 9); }
+.iv-sattire { margin-top: calc(var(--u) * 9); }
+.iv-soloicon { pointer-events: none; }
+.iv-solo-icon { top: auto; bottom: calc(var(--u) * 48); right: calc(var(--u) * 45); width: calc(var(--u) * 98); height: calc(var(--u) * 98); }
+.iv-solo .iv-couple { margin-top: calc(var(--u) * 16); }
+.iv-solo .iv-FamilyJoy { margin-top: calc(var(--u) * 9); }
+.iv-stime { margin-top: calc(var(--u) * 3); }
+.iv-attire-k { font-style: normal; }
