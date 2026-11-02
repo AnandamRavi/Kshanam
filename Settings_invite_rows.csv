@@ -1,0 +1,117 @@
+Key,Value,What it does
+InviteMode,generated,"generated = build invites from the sheet (default); auto = use a PDF from the Invitations tab if one matches, else build; pdf = old behaviour"
+InviteName1,Raj,"Cover first name, left/top (blank = first word of the Bridegroom row in Party)"
+InviteName2,Simran,"Cover first name, second (blank = first word of the Bride row in Party)"
+InviteFullName1,,Full name on the family page (blank = Name from the Bridegroom row in Party)
+InviteFullName2,,Full name on the family page (blank = Name from the Bride row in Party)
+InviteGroomParents,,"Optional override, names separated by ; (blank = Party rows whose Role mentions father/mother + groom)"
+InviteBrideParents,,"Optional override, names separated by ; e.g. Chaudhary Baldev Singh;Lajwanti Singh (blank = Party rows for father/mother of the bride)"
+InviteJoyBy,,"Optional override for the ""With their joy shared by"" names (blank = Party rows for sister/brother of bride/groom)"
+InviteGroomGrandparents,,Optional override. Names separated by ; and pairs separated by | e.g. Late Smt. A;Late Shri B|Late Smt. C;Late Shri D (blank = Party rows whose Role says grandfather/grandmother + groom)
+InviteBrideGrandparents,,"Same, for the bride's grandparents"
+InviteGroomGrandLabel,Grandson of,Label above the groom's grandparents
+InviteBrideGrandLabel,Granddaughter of,Label above the bride's grandparents
+InviteParentOrder,father,father = fathers/grandfathers listed first; sheet = keep the order of the Party tab rows
+InviteBlessing,,"Optional line at the top of the family page, e.g. || Om Ganapathaye Namaha ||"
+InviteVenue,,"Optional venue line (blank = the location shared by the guest's events, else VenueDetails)"
+InviteClosing,,Closing line on venue block and back cover (blank = FooterText)
+InviteVenueBlock,auto,auto / yes / no. auto shows the venue block only when it fits under an odd number of events
+InviteShowScene,Yes,Yes/No: the full-page illustration after the cover
+InviteShowBackCover,Yes,Yes/No: the back cover
+InviteCoverBg,,Optional image link (Drive ok) replacing invite/cover-bg.png
+InviteSceneImage,,Optional image link replacing invite/scene.jpg
+InviteBackBg,,Optional image link replacing invite/back-bg.png
+InviteFontDisplay,DM Serif Display,Google Font used for headings/names (any name from fonts.google.com)
+InviteFontBody,Cormorant Garamond,Google Font used for body text
+InviteIntroText,You are cordially invited to the wedding of,Wording on the invite
+InviteRequestText,request the pleasure of your company at the wedding of their children,Wording on the invite
+InviteJoyText,With their joy shared by,Wording on the invite
+InviteAndText,and,Wording on the invite
+InviteWhenPrefix,On,Wording on the invite
+InviteWherePrefix,At,Wording on the invite
+InviteVenueLabel,The venue,Wording on the invite
+InviteAttireLabel,Attire:,Wording on the invite
+InvitePlaceLabel,Venue:,Wording on the invite
+InviteTimeSuffix,onwards,Wording on the invite (use none to hide)
+InviteLocale,en-US,Wording on the invite
+InviteCoverIntro_Font,body,"Cover: ""You are cordially invited..."" - font: display, body, or any Google Font name"
+InviteCoverIntro_Size,18.8,"Cover: ""You are cordially invited..."" - size in points on a 590 pt wide card"
+InviteCoverIntro_Color,#f6cf7a,"Cover: ""You are cordially invited..."" - colour"
+InviteCoverNames_Font,display,"Cover: the two names - font: display, body, or any Google Font name"
+InviteCoverNames_Size,88.5,Cover: the two names - size in points on a 590 pt wide card
+InviteCoverNames_Color,#fbe9cf,Cover: the two names - colour
+InviteCoverAmp_Font,display,"Cover: the & - font: display, body, or any Google Font name"
+InviteCoverAmp_Size,52.5,Cover: the & - size in points on a 590 pt wide card
+InviteCoverAmp_Color,#e9a820,Cover: the & - colour
+InviteCoverDate_Font,body,"Cover: date line - font: display, body, or any Google Font name"
+InviteCoverDate_Size,13.5,Cover: date line - size in points on a 590 pt wide card
+InviteCoverDate_Color,#f6cf7a,Cover: date line - colour
+InviteCoverVenue_Font,body,"Cover: venue line - font: display, body, or any Google Font name"
+InviteCoverVenue_Size,11.2,Cover: venue line - size in points on a 590 pt wide card
+InviteCoverVenue_Color,#f6cf7a,Cover: venue line - colour
+InviteFamilyParents_Font,display,"Family page: parents' names - font: display, body, or any Google Font name"
+InviteFamilyParents_Size,18,Family page: parents' names - size in points on a 590 pt wide card
+InviteFamilyParents_Color,#7e2a2e,Family page: parents' names - colour
+InviteFamilyAnd_Font,body,"Family page: ""and"" - font: display, body, or any Google Font name"
+InviteFamilyAnd_Size,15,"Family page: ""and"" - size in points on a 590 pt wide card"
+InviteFamilyAnd_Color,#8a6a60,"Family page: ""and"" - colour"
+InviteFamilyRequest_Font,body,"Family page: ""request the pleasure..."" - font: display, body, or any Google Font name"
+InviteFamilyRequest_Size,15.8,"Family page: ""request the pleasure..."" - size in points on a 590 pt wide card"
+InviteFamilyRequest_Color,#6b2f2a,"Family page: ""request the pleasure..."" - colour"
+InviteFamilyCouple_Font,display,"Family page: couple's full names - font: display, body, or any Google Font name"
+InviteFamilyCouple_Size,33.8,Family page: couple's full names - size in points on a 590 pt wide card
+InviteFamilyCouple_Color,#7e2a2e,Family page: couple's full names - colour
+InviteFamilyAmp_Font,display,"Family page: the & - font: display, body, or any Google Font name"
+InviteFamilyAmp_Size,30,Family page: the & - size in points on a 590 pt wide card
+InviteFamilyAmp_Color,#e9a820,Family page: the & - colour
+InviteFamilyJoy_Font,body,"Family page: ""With their joy shared by..."" - font: display, body, or any Google Font name"
+InviteFamilyJoy_Size,14.2,"Family page: ""With their joy shared by..."" - size in points on a 590 pt wide card"
+InviteFamilyJoy_Color,#8a6a60,"Family page: ""With their joy shared by..."" - colour"
+InviteFamilyBlessing_Font,body,"Family page: blessing line - font: display, body, or any Google Font name"
+InviteFamilyBlessing_Size,15,Family page: blessing line - size in points on a 590 pt wide card
+InviteFamilyBlessing_Color,#e8741e,Family page: blessing line - colour
+InviteFamilyGrandLabel_Font,body,"Family page: ""Grandson of"" label - font: display, body, or any Google Font name"
+InviteFamilyGrandLabel_Size,12,"Family page: ""Grandson of"" label - size in points on a 590 pt wide card"
+InviteFamilyGrandLabel_Color,#8a6a60,"Family page: ""Grandson of"" label - colour"
+InviteFamilyGrandNames_Font,body,"Family page: grandparents' names - font: display, body, or any Google Font name"
+InviteFamilyGrandNames_Size,14,Family page: grandparents' names - size in points on a 590 pt wide card
+InviteFamilyGrandNames_Color,#8a6a60,Family page: grandparents' names - colour
+InviteFamilyGrandAnd_Font,body,"Family page: ""and"" between grandparent pairs - font: display, body, or any Google Font name"
+InviteFamilyGrandAnd_Size,12,"Family page: ""and"" between grandparent pairs - size in points on a 590 pt wide card"
+InviteFamilyGrandAnd_Color,#8a6a60,"Family page: ""and"" between grandparent pairs - colour"
+InviteFamilyWhen_Font,body,"Family page: ""On <dates>"" - font: display, body, or any Google Font name"
+InviteFamilyWhen_Size,18,"Family page: ""On <dates>"" - size in points on a 590 pt wide card"
+InviteFamilyWhen_Color,#7e2a2e,"Family page: ""On <dates>"" - colour"
+InviteFamilyWhere_Font,body,"Family page: ""At <venue>"" - font: display, body, or any Google Font name"
+InviteFamilyWhere_Size,15.8,"Family page: ""At <venue>"" - size in points on a 590 pt wide card"
+InviteFamilyWhere_Color,#6b2f2a,"Family page: ""At <venue>"" - colour"
+InviteEventLabel_Font,body,"Event: small label (THE MEHNDI) - font: display, body, or any Google Font name"
+InviteEventLabel_Size,12,Event: small label (THE MEHNDI) - size in points on a 590 pt wide card
+InviteEventLabel_Color,#e8741e,Event: small label (THE MEHNDI) - colour
+InviteEventTitle_Font,display,"Event: title - font: display, body, or any Google Font name"
+InviteEventTitle_Size,30.8,Event: title - size in points on a 590 pt wide card
+InviteEventTitle_Color,#7e2a2e,Event: title - colour
+InviteEventDesc_Font,body,"Event: description - font: display, body, or any Google Font name"
+InviteEventDesc_Size,14.6,Event: description - size in points on a 590 pt wide card
+InviteEventDesc_Color,#7e2a2e,Event: description - colour
+InviteEventDate_Font,body,"Event: date - font: display, body, or any Google Font name"
+InviteEventDate_Size,16.5,Event: date - size in points on a 590 pt wide card
+InviteEventDate_Color,#6b2f2a,Event: date - colour
+InviteEventTime_Font,body,"Event: time - font: display, body, or any Google Font name"
+InviteEventTime_Size,14.2,Event: time - size in points on a 590 pt wide card
+InviteEventTime_Color,#8a6a60,Event: time - colour
+InviteEventAttire_Font,body,"Event: attire (and venue line when events are at different places) - font: display, body, or any Google Font name"
+InviteEventAttire_Size,13.5,Event: attire (and venue line when events are at different places) - size in points on a 590 pt wide card
+InviteEventAttire_Color,#8a6a60,Event: attire (and venue line when events are at different places) - colour
+InviteVenueLabel_Font,body,"Venue block: label - font: display, body, or any Google Font name"
+InviteVenueLabel_Size,12,Venue block: label - size in points on a 590 pt wide card
+InviteVenueLabel_Color,#e8741e,Venue block: label - colour
+InviteVenueName_Font,display,"Venue block: venue name - font: display, body, or any Google Font name"
+InviteVenueName_Size,25.5,Venue block: venue name - size in points on a 590 pt wide card
+InviteVenueName_Color,#7e2a2e,Venue block: venue name - colour
+InviteVenueTagline_Font,body,"Venue block: closing line - font: display, body, or any Google Font name"
+InviteVenueTagline_Size,24,Venue block: closing line - size in points on a 590 pt wide card
+InviteVenueTagline_Color,#7e2a2e,Venue block: closing line - colour
+InviteBackCaption_Font,body,"Back cover: caption - font: display, body, or any Google Font name"
+InviteBackCaption_Size,28.5,Back cover: caption - size in points on a 590 pt wide card
+InviteBackCaption_Color,#fbe9cf,Back cover: caption - colour

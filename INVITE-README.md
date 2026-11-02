@@ -22,7 +22,10 @@ A guest with one event gets a shorter invitation; two events get no separate ven
 - Bridegroom / Bride: full names on the family page; first words on the cover
 - Role containing father or mother plus groom (or bride): the parents (father listed first)
 - Role containing sister or brother plus bride or groom: "With their joy shared by"
-- To override any of these, fill the matching Settings row (`InviteGroomParents`, `InviteBrideParents`, `InviteJoyBy`, `InviteName1`, `InviteName2`, `InviteFullName1`, `InviteFullName2`). Separate several names with `;`.
+- Grandparents: a Role containing grandfather or grandmother (or nana, nani, dada, dadi) plus bride or groom. They appear under each partner's name, as in the Dhwani and Arnesh invite: "Grandson of" / "Granddaughter of", with an "and" between pairs. Put "paternal" or "maternal" in the Role (e.g. "Maternal grandmother of the bride") to form the pairs; with no such wording they are shown as one pair/group.
+- Fathers and grandfathers are listed first. Set `InviteParentOrder` to `sheet` to keep the Party tab order instead (the Dhwani and Arnesh invite lists mothers first).
+- `InviteBlessing` adds a line at the top, e.g. || Om Ganapathaye Namaha ||
+- To override any of these, fill the matching Settings row (`InviteGroomParents`, `InviteBrideParents`, `InviteJoyBy`, `InviteGroomGrandparents`, `InviteBrideGrandparents`, `InviteName1`, `InviteName2`, `InviteFullName1`, `InviteFullName2`). Separate several names with `;`.
 
 **Settings tab** - fonts, sizes and colours, for every piece of text:
 `Invite<Element>_Font`, `_Size`, `_Color` (also optional `_Weight` and `_Style` = italic/normal).
