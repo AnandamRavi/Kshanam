@@ -33,6 +33,10 @@
     FamilyCouple:  { f: "display", s: 33.8, c: "#7e2a2e" },
     FamilyAmp:     { f: "display", s: 30,   c: "#e9a820" },
     FamilyJoy:     { f: "body",    s: 14.2, c: "#8a6a60", i: 1 },
+    FamilyBlessing:{ f: "body",    s: 15,   c: "#e8741e", i: 1 },
+    FamilyGrandLabel: { f: "body", s: 12,   c: "#8a6a60" },
+    FamilyGrandNames: { f: "body", s: 14,   c: "#8a6a60" },
+    FamilyGrandAnd:   { f: "body", s: 12,   c: "#8a6a60" },
     FamilyWhen:    { f: "body",    s: 18,   c: "#7e2a2e" },
     FamilyWhere:   { f: "body",    s: 15.8, c: "#6b2f2a", i: 1 },
     EventLabel:    { f: "body",    s: 12,   c: "#e8741e" },
@@ -53,6 +57,9 @@
     InviteRequestText: "request the pleasure of your company at the wedding of their children",
     InviteJoyText: "With their joy shared by",
     InviteAndText: "and",
+    InviteGroomGrandLabel: "Grandson of",
+    InviteBrideGrandLabel: "Granddaughter of",
+    InviteParentOrder: "father",
     InviteWhenPrefix: "On",
     InviteWherePrefix: "At",
     InviteVenueLabel: "The venue",
@@ -144,13 +151,27 @@
     var parentWord = /(father|mother|parent|dad|mum|mom)/;
     var isGroom = function (p) { return /^(bride\s*)?groom$/.test(role(p)); };
     var rank = function (p) { return /(father|dad)/.test(role(p)) ? 0 : /(mother|mum|mom)/.test(role(p)) ? 1 : 2; };
-    var byRank = function (a, b) { return rank(a) - rank(b); };
+    var keepOrder = /sheet|row|tab|as.?is/i.test(String(S.InviteParentOrder || ""));
+    var byRank = function (a, b) { return keepOrder ? 0 : rank(a) - rank(b); };
+    var isGrand = function (p) { return /grand|\b(nana|nani|nanu|dada|dadi)(ji)?\b/.test(role(p)); };
     var names = function (arr) { return arr.map(function (p) { return String(p.Name).trim(); }); };
 
     var groom = rows.filter(isGroom)[0];
     var bride = rows.filter(function (p) { return /^bride$/.test(role(p)); })[0];
-    var gp = rows.filter(function (p) { return /groom/.test(role(p)) && parentWord.test(role(p)) && !isGroom(p); }).sort(byRank);
-    var bp = rows.filter(function (p) { return /\bbride\b/.test(role(p)) && !/groom/.test(role(p)) && parentWord.test(role(p)); }).sort(byRank);
+    var gp = rows.filter(function (p) { return /groom/.test(role(p)) && parentWord.test(role(p)) && !isGroom(p) && !isGrand(p); }).sort(byRank);
+    var bp = rows.filter(function (p) { return /\bbride\b/.test(role(p)) && !/groom/.test(role(p)) && parentWord.test(role(p)) && !isGrand(p); }).sort(byRank);
+    // Grandparents: grouped into pairs (paternal side, maternal side, anyone unlabelled)
+    var groups = function (arr) {
+      var b = { p: [], m: [], o: [] };
+      arr.forEach(function (p) {
+        var r = role(p);
+        (/paternal|(father|dad)'?s (side|parents)/.test(r) ? b.p : /maternal|(mother|mum|mom)'?s (side|parents)/.test(r) ? b.m : b.o).push(p);
+      });
+      return [b.p, b.m, b.o].filter(function (g) { return g.length; }).map(function (g) { return names(g.sort(byRank)); });
+    };
+    var gg = rows.filter(function (p) { return /groom/.test(role(p)) && isGrand(p) && !isGroom(p); });
+    var bg = rows.filter(function (p) { return /\bbride\b/.test(role(p)) && !/groom/.test(role(p)) && isGrand(p); });
+    var parseGroups = function (raw) { return String(raw).split("|").map(list).filter(function (g) { return g.length; }); };
     var joy = rows.filter(function (p) { return /(sister|brother|sibling)/.test(role(p)) && /(bride|groom)/.test(role(p)); });
 
     var first = function (n) { return String(n || "").trim().split(/\s+/)[0] || ""; };
@@ -163,6 +184,8 @@
       full2: full2,
       side1: S.InviteGroomParents ? list(S.InviteGroomParents) : names(gp),
       side2: S.InviteBrideParents ? list(S.InviteBrideParents) : names(bp),
+      grand1: S.InviteGroomGrandparents ? parseGroups(S.InviteGroomGrandparents) : groups(gg),
+      grand2: S.InviteBrideGrandparents ? parseGroups(S.InviteBrideGrandparents) : groups(bg),
       joy: S.InviteJoyBy ? list(S.InviteJoyBy) : names(joy)
     };
   }
@@ -267,7 +290,14 @@
         return t("FamilyParents", "p", esc(n) + (i < arr.length - 1 ? " &amp;" : ""));
       }).join("") + "</div>";
     };
-    var famHtml = '<div class="iv-orn"></div>';
+    var grandBlock = function (groupsArr, label) {
+      if (!groupsArr.length) return "";
+      return '<div class="iv-grand">' + t("FamilyGrandLabel", "p", esc(label)) + groupsArr.map(function (g, gi) {
+        return (gi ? t("FamilyGrandAnd", "p", esc(S.InviteAndText), "iv-gand") : "") + '<div class="iv-gpair">' +
+          g.map(function (n, i) { return t("FamilyGrandNames", "p", esc(n) + (i < g.length - 1 ? " &amp;" : "")); }).join("") + "</div>";
+      }).join("") + "</div>";
+    };
+    var famHtml = (S.InviteBlessing ? t("FamilyBlessing", "p", esc(S.InviteBlessing), "iv-blessing") : "") + '<div class="iv-orn"></div>';
     if (hasSides) {
       famHtml += '<div class="iv-parents">' +
         (P.side1.length ? side(P.side1) : "") +
@@ -275,7 +305,11 @@
         (P.side2.length ? side(P.side2) : "") + "</div>";
     }
     famHtml += t("FamilyRequest", "p", esc(S.InviteRequestText), "iv-req");
-    if (P.full1 || P.full2) {
+    if ((P.grand1.length || P.grand2.length) && (P.full1 || P.full2)) {
+      famHtml += '<div class="iv-couplegrid"><div class="iv-cp">' + t("FamilyCouple", "p", esc(P.full1), "iv-cname") +
+        grandBlock(P.grand1, S.InviteGroomGrandLabel) + "</div>" + t("FamilyAmp", "p", "&amp;", "iv-camp") +
+        '<div class="iv-cp">' + t("FamilyCouple", "p", esc(P.full2), "iv-cname") + grandBlock(P.grand2, S.InviteBrideGrandLabel) + "</div></div>";
+    } else if (P.full1 || P.full2) {
       famHtml += t("FamilyCouple", "p",
         esc(P.full1) + (P.full1 && P.full2 ? " " + t("FamilyAmp", "span", "&amp;", "iv-inline") + " " : "") + esc(P.full2), "iv-couple");
     }
