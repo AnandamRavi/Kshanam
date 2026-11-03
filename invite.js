@@ -58,7 +58,8 @@
     InviteFontDisplay: "DM Serif Display",
     InviteFontBody: "Cormorant Garamond",
     InviteIntroText: "You are cordially invited to the wedding of",
-    InviteRequestText: "request the pleasure of your company at the wedding of their children",
+    InviteRequestText: "request the pleasure of your company at {event} of their children",
+    InviteMainEvent: "WEDDING",
     InviteJoyText: "With their joy shared by",
     InviteAndText: "and",
     InviteGroomGrandLabel: "Grandson of",
@@ -296,6 +297,20 @@
     var suffix = isOff(S.InviteTimeSuffix) ? "" : S.InviteTimeSuffix;
     var iconFor = function (ev) { return img(ev.InviteIcon) || "invite/icon-" + String(ev.ID || "").toLowerCase() + ".png"; };
 
+    // which event the hosts are "requesting your company at"
+    var PHRASES = { mehndi: "the Mehndi function", wedding: "the wedding", reception: "the wedding reception" };
+    var phraseOf = function (ev) {
+      var p = String(ev.InviteRequestPhrase || "").trim();
+      if (p) return p;
+      var id = String(ev.ID || "").toLowerCase();
+      return PHRASES[id] || ("the " + String(ev.Name || "wedding").toLowerCase());
+    };
+    var mainEv = events.filter(function (e) { return String(e.ID || "").trim().toUpperCase() === String(S.InviteMainEvent).trim().toUpperCase(); })[0];
+    var eventPhrase = events.length === 1 ? phraseOf(events[0])
+      : mainEv ? phraseOf(mainEv)
+      : events.map(phraseOf).join(" " + S.InviteAndText + " ");
+    var requestText = String(S.InviteRequestText).replace(/\{event\}/gi, eventPhrase);
+
     // 3. family page
     var hasSides = P.side1.length || P.side2.length;
     var side = function (arr) {
@@ -317,7 +332,7 @@
         (P.side1.length && P.side2.length ? t("FamilyAnd", "span", esc(S.InviteAndText)) : "") +
         (P.side2.length ? side(P.side2) : "") + "</div>";
     }
-    famHtml += t("FamilyRequest", "p", esc(S.InviteRequestText), "iv-req");
+    famHtml += t("FamilyRequest", "p", esc(requestText), "iv-req");
     if ((P.grand1.length || P.grand2.length) && (P.full1 || P.full2)) {
       famHtml += '<div class="iv-couplegrid"><div class="iv-cp">' + t("FamilyCouple", "p", esc(P.full1), "iv-cname") +
         grandBlock(P.grand1, S.InviteGroomGrandLabel) + "</div>" + t("FamilyAmp", "p", "&amp;", "iv-camp") +
