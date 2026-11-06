@@ -1,0 +1,10 @@
+/* Golden Garden: little watercolor sprigs in the corners of the paper pages. */
+.iv-k { color: #a47f35; }
+.iv-card::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: url("card-florals.png") center / 100% 100% no-repeat;
+}
+
+/* Cover: a little more air between the intro line and the names. */
+.iv-cover-top { top: calc(var(--u) * 160); }
+.iv-names { margin-top: calc(var(--u) * 14); }
