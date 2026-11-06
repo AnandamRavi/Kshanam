@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invitation preview</title>
-<link rel="stylesheet" href="style.css?v=4"><link rel="stylesheet" href="invite.css?v=3">
+<link rel="stylesheet" href="style.css?v=4"><link rel="stylesheet" href="invite.css?v=6">
 </head><body>
 <div class="wrap" style="padding-top:24px">
   <p><strong>Invitation preview.</strong> Tick the events a guest is invited to. Edit the Settings / Events / Party tabs, then refresh to see changes.</p>
@@ -9,11 +9,11 @@
   <div id="invitation-embed" style="display:block"></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="config.js"></script><script src="settings.js?v=3"></script><script src="invite.js?v=4"></script>
+<script src="config.js"></script><script src="settings.js?v=3"></script><script src="invite.js?v=6"></script>
 <script>
 (async function () {
   const text = await (await fetch(CONFIG.EVENTS_CSV_URL, { cache: "no-store" })).text();
-  const events = Papa.parse(text, { header: true, skipEmptyLines: true }).data.filter(e => e.ID);
+  const events = Papa.parse(text, { header: true, skipEmptyLines: true }).data.filter(e => e.ID && String(e.ID).trim().charAt(0) !== "<");
   const picker = document.getElementById("picker");
   picker.innerHTML = events.map(e => `<label style="margin-right:16px"><input type="checkbox" value="${e.ID}" checked> ${e.Name || e.ID}</label>`).join("");
   async function draw() {

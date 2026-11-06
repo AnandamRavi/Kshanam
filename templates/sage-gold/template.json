@@ -1,0 +1,19 @@
+{
+  "name": "Sage & Gold (demo)",
+  "description": "A simple placeholder set (teal and gold) that shows how a second template set switches the whole invitation. Replace with real artwork.",
+  "artist": "Placeholder artwork",
+  "images": { "cover": "cover-bg.png", "scene": "scene.jpg", "back": "back-bg.png", "ornament": "ornament.png" },
+  "fonts": { "display": "Playfair Display", "body": "EB Garamond" },
+  "scale": 0.95,
+  "colors": { "cardBg": "#f4efe4", "cardBorder": "#9a8a5a", "rule": "#cdbf93", "coverBg": "#1f4a45", "sceneBg": "#d9c58f", "backBg": "#1f4a45" },
+  "css": "style.css",
+  "elements": {
+    "CoverIntro": {"color": "#e6d6a6"}, "CoverNames": {"color": "#f7f1e1"}, "CoverAmp": {"color": "#d4b45a"}, "CoverDate": {"color": "#e6d6a6"}, "CoverVenue": {"color": "#e6d6a6"},
+    "FamilyBlessing": {"color": "#a8873a"}, "FamilyParents": {"color": "#1f4a45"}, "FamilyAnd": {"color": "#7a7a62"}, "FamilyRequest": {"color": "#35504b"},
+    "FamilyCouple": {"color": "#1f4a45"}, "FamilyAmp": {"color": "#b8943f"}, "FamilyJoy": {"color": "#7a7a62"}, "FamilyWhen": {"color": "#1f4a45"}, "FamilyWhere": {"color": "#35504b"},
+    "FamilyGrandLabel": {"color": "#7a7a62"}, "FamilyGrandNames": {"color": "#7a7a62"}, "FamilyGrandAnd": {"color": "#7a7a62"},
+    "EventLabel": {"color": "#a8873a"}, "EventTitle": {"color": "#1f4a45"}, "EventDesc": {"color": "#1f4a45"}, "EventDate": {"color": "#35504b"}, "EventTime": {"color": "#7a7a62"}, "EventAttire": {"color": "#7a7a62"},
+    "SoloDate": {"color": "#1f4a45"}, "SoloTime": {"color": "#7a7a62"}, "SoloWhere": {"color": "#35504b"}, "SoloAttire": {"color": "#7a7a62"},
+    "VenueLabel": {"color": "#a8873a"}, "VenueName": {"color": "#1f4a45"}, "VenueTagline": {"color": "#1f4a45"}, "BackCaption": {"color": "#f7f1e1"}
+  }
+}

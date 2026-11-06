@@ -1,0 +1,10 @@
+{
+  "name": "Marigold",
+  "description": "Maroon and marigold garlands with a palanquin scene. The original look.",
+  "artist": "",
+  "images": { "cover": "cover-bg.png", "scene": "scene.jpg", "back": "back-bg.png", "ornament": "ornament.png" },
+  "fonts": { "display": "DM Serif Display", "body": "Cormorant Garamond" },
+  "scale": 1,
+  "colors": { "cardBg": "#ffe4c6", "cardBorder": "#b2705f", "rule": "#d9a98f", "coverBg": "#7e2a2e", "sceneBg": "#e8a030", "backBg": "#7e2a2e" },
+  "elements": {}
+}

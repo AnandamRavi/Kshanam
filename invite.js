@@ -214,18 +214,77 @@
   }
   function cleanFont(n) { return String(n || "").replace(/[^\w \-]/g, "").trim(); }
 
+  /* ---------- template sets (templates/<id>/template.json) ---------- */
+  var tplCache = {};
+  function tplId(v) { v = String(v || "").trim().toLowerCase(); return /^[a-z0-9][\w-]*$/.test(v) ? v : "marigold"; }
+  async function loadTemplate(id) {
+    id = tplId(id);
+    if (tplCache[id]) return tplCache[id];
+    var T = null;
+    try {
+      var res = await fetch("templates/" + id + "/template.json", { cache: "no-cache" });
+      if (res.ok) T = await res.json();
+    } catch (e) { /* fall through */ }
+    if (!T) {
+      if (id !== "marigold") return loadTemplate("marigold");
+      T = {};
+    }
+    T._id = id; T._base = "templates/" + id + "/";
+    tplCache[id] = T;
+    return T;
+  }
+  // template.json -> the same Invite... keys the Settings tab uses
+  function templateSettings(T) {
+    var o = {};
+    if (!T) return o;
+    var at = function (v) { v = String(v || ""); return !v ? "" : (/^(https?:)?\/\//.test(v) || v.charAt(0) === "/") ? v : (T._base || "") + v; };
+    var im = T.images || {}, f = T.fonts || {}, c = T.colors || {}, el = T.elements || {};
+    if (im.cover) o.InviteCoverBg = at(im.cover);
+    if (im.scene) o.InviteSceneImage = at(im.scene);
+    if (im.back) o.InviteBackBg = at(im.back);
+    if (im.ornament) o.InviteOrnament = at(im.ornament);
+    if (f.display) o.InviteFontDisplay = f.display;
+    if (f.body) o.InviteFontBody = f.body;
+    if (T.scale) o.InviteSizeScale = String(T.scale);
+    var cm = { cardBg: "InviteCardBg", cardBorder: "InviteCardBorder", rule: "InviteRuleColor", coverBg: "InviteCoverColor", sceneBg: "InviteSceneColor", backBg: "InviteBackColor" };
+    Object.keys(cm).forEach(function (k) { if (c[k]) o[cm[k]] = c[k]; });
+    Object.keys(el).forEach(function (k) {
+      ["font", "size", "color", "style", "weight"].forEach(function (p) {
+        if (el[k][p] !== undefined && el[k][p] !== "") o["Invite" + k + "_" + p.charAt(0).toUpperCase() + p.slice(1)] = String(el[k][p]);
+      });
+    });
+    return o;
+  }
+  function useTemplateCss(T) {
+    var old = document.getElementById("iv-template-css");
+    if (old) old.remove();
+    if (T && T.css) {
+      var l = document.createElement("link");
+      l.id = "iv-template-css"; l.rel = "stylesheet"; l.href = T._base + T.css;
+      document.head.appendChild(l);
+    }
+  }
+
   /* ---------- the renderer ---------- */
   async function renderGeneratedInvite(opts) {
     var container = opts.container;
     var events = opts.events || [];
     if (!container || !events.length) { if (container) container.style.display = "none"; return false; }
 
-    var S = Object.assign({}, TEXT_DEFAULTS);
+    var T = await loadTemplate((opts.settings || {}).InviteTemplate);
+    useTemplateCss(T);
+    var S = Object.assign({}, TEXT_DEFAULTS, templateSettings(T));
     Object.keys(opts.settings || {}).forEach(function (k) { if (opts.settings[k] !== "") S[k] = opts.settings[k]; });
     var party = await loadParty();
     var P = people(party, S);
     var loc = S.InviteLocale;
     var used = {};
+    var scale = parseFloat(S.InviteSizeScale) || 1;
+    var cssVar = function (v) { return String(v || "").replace(/[^#\w(),. %-]/g, ""); };
+    var wrapStyle = [["--iv-card", S.InviteCardBg], ["--iv-border", S.InviteCardBorder], ["--iv-rule", S.InviteRuleColor],
+      ["--iv-cover-bg", S.InviteCoverColor], ["--iv-scene-bg", S.InviteSceneColor], ["--iv-back-bg", S.InviteBackColor]]
+      .filter(function (p) { return p[1]; }).map(function (p) { return p[0] + ":" + cssVar(p[1]); }).join(";");
+    if (S.InviteOrnament) wrapStyle += ';--iv-ornament:url(\'' + String(S.InviteOrnament).replace(/[^\w\-.\/:%?=&]/g, "") + '\')';
 
     function fontFor(key) {
       var d = DEF[key];
@@ -238,7 +297,7 @@
     // t(): one piece of styled text
     function t(key, tag, html, cls) {
       var d = DEF[key], pre = "Invite" + key;
-      var size = parseFloat(S[pre + "_Size"]) || d.s;
+      var size = Math.round((parseFloat(S[pre + "_Size"]) || d.s) * scale * 100) / 100;
       var color = String(S[pre + "_Color"] || d.c).replace(/[^#\w(),. %-]/g, "");
       var weight = parseInt(S[pre + "_Weight"], 10) || (d.f === "body" ? 600 : 400);
       var style = String(S[pre + "_Style"] || (d.i ? "italic" : "normal")).toLowerCase() === "italic" ? "italic" : "normal";
@@ -273,14 +332,14 @@
     var pages = [];
 
     // 1. cover
-    var coverBg = img(S.InviteCoverBg) || "invite/cover-bg.png";
+    var coverBg = img(S.InviteCoverBg);
     var namesHtml = (P.name1 || P.name2)
       ? t("CoverNames", "p", esc(P.name1), "iv-n1") +
         (P.name1 && P.name2 ? t("CoverAmp", "p", "&amp;") : "") +
         t("CoverNames", "p", esc(P.name2), "iv-n2")
       : t("CoverNames", "p", esc(S.HeroTitle || ""), "iv-n1");
     pages.push(
-      '<section class="iv-page iv-cover" aria-label="Invitation cover" style="background-image:url(\'' + coverBg + '\')"><div class="iv-in">' +
+      '<section class="iv-page iv-cover" aria-label="Invitation cover"' + (coverBg ? ' style="background-image:url(\'' + coverBg + '\')"' : "") + '><div class="iv-in">' +
       '<div class="iv-cover-top">' + t("CoverIntro", "p", esc(S.InviteIntroText)) +
       '<div class="iv-names">' + namesHtml + "</div></div>" +
       '<div class="iv-cover-bottom">' + (range ? t("CoverDate", "p", esc(range), "iv-caps iv-wide") : "") +
@@ -288,14 +347,14 @@
     );
 
     // 2. picture
-    if (!isOff(S.InviteShowScene)) {
+    if (!isOff(S.InviteShowScene) && img(S.InviteSceneImage)) {
       pages.push('<section class="iv-page iv-scene" aria-label="Illustration" style="background-image:url(\'' +
-        (img(S.InviteSceneImage) || "invite/scene.jpg") + '\')"></section>');
+        img(S.InviteSceneImage) + '\')"></section>');
     }
 
     var solo = events.length === 1 && !isOff(S.InviteSoloCombine);
     var suffix = isOff(S.InviteTimeSuffix) ? "" : S.InviteTimeSuffix;
-    var iconFor = function (ev) { return img(ev.InviteIcon) || "invite/icon-" + String(ev.ID || "").toLowerCase() + ".png"; };
+    var iconFor = function (ev) { return img(ev.InviteIcon) || T._base + "icon-" + String(ev.ID || "").toLowerCase() + ".png"; };
 
     // which event the hosts are "requesting your company at"
     var PHRASES = { mehndi: "the Mehndi function", wedding: "the wedding", reception: "the wedding reception" };
@@ -405,15 +464,14 @@
 
     // 5. back cover
     if (!isOff(S.InviteShowBackCover)) {
-      pages.push('<section class="iv-page iv-back" aria-label="Back cover" style="background-image:url(\'' +
-        (img(S.InviteBackBg) || "invite/back-bg.png") + '\')"><div class="iv-in">' +
+      pages.push('<section class="iv-page iv-back" aria-label="Back cover"' + (img(S.InviteBackBg) ? ' style="background-image:url(\'' + img(S.InviteBackBg) + '\')"' : "") + '><div class="iv-in">' +
         (closing ? t("BackCaption", "p", esc(closing), "iv-backcap") : "") + "</div></section>");
     }
 
     /* ---------- put it on the page ---------- */
     loadFonts(Object.keys(used));
     container.innerHTML =
-      '<div class="iv-wrap"><div class="iv-deck" tabindex="0" aria-label="Your invitation">' + pages.join("") + "</div>" +
+      '<div class="iv-wrap" style="' + wrapStyle + '"><div class="iv-deck" tabindex="0" aria-label="Your invitation">' + pages.join("") + "</div>" +
       '<div class="iv-ui"><button type="button" class="iv-nav" data-iv="prev" aria-label="Previous page">\u2039</button>' +
       '<span class="iv-count" aria-live="polite">1 / ' + pages.length + "</span>" +
       '<button type="button" class="iv-nav" data-iv="next" aria-label="Next page">\u203A</button></div>' +
@@ -444,5 +502,7 @@
   }
 
   renderGeneratedInvite.defaults = { DEF: DEF, TEXT: TEXT_DEFAULTS };
+  renderGeneratedInvite.loadTemplate = loadTemplate;
+  renderGeneratedInvite.templateSettings = templateSettings;
   window.renderGeneratedInvite = renderGeneratedInvite;
 })();

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Invitation builder</title>
+<link rel="stylesheet" href="invite.css?v=6">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; color: #2b2220; background: #f6f1ea; }
+  header { padding: 18px 24px 6px; max-width: 1280px; margin: 0 auto; }
+  header h1 { margin: 0 0 4px; font-size: 22px; }
+  header p { margin: 0; color: #6b5b52; max-width: 760px; }
+  .b-grid { display: grid; grid-template-columns: minmax(320px, 440px) 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 16px 24px 40px; align-items: start; }
+  .b-panel { background: #fff; border: 1px solid #e3d9cf; border-radius: 10px; padding: 8px 14px 14px; }
+  .b-side { position: sticky; top: 12px; display: grid; gap: 14px; }
+  .b-card { background: #fff; border: 1px solid #e3d9cf; border-radius: 10px; padding: 14px; }
+  details { border-top: 1px solid #eee4da; padding: 8px 0; }
+  details:first-of-type { border-top: 0; }
+  summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+  .b-hint { color: #7a6a60; font-size: 13px; margin: 4px 0 8px; }
+  .b-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 3px 0; }
+  .b-lab { font-size: 14px; }
+  .b-el { border-top: 1px dashed #eee4da; padding: 6px 0; }
+  .b-el:first-of-type { border-top: 0; }
+  .b-el strong { display: block; font-size: 13.5px; margin-bottom: 4px; }
+  .b-el .b-ctls { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+  .b-el label { font-size: 12px; color: #7a6a60; display: flex; gap: 4px; align-items: center; }
+  input[type=text], input[type=number], select { font: inherit; font-size: 14px; padding: 5px 7px; border: 1px solid #d8cdc2; border-radius: 6px; background: #fff; min-width: 0; }
+  .b-font { width: 190px; } .b-num { width: 70px; } .b-hex { width: 84px; } .b-txt { width: 100%; }
+  .b-row .b-txt { width: 220px; }
+  .b-col { display: inline-flex; gap: 4px; align-items: center; }
+  input[type=color] { width: 32px; height: 30px; padding: 1px; border: 1px solid #d8cdc2; border-radius: 6px; background: #fff; }
+  .b-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin: 8px 0; }
+  .b-tpl { display: block; padding: 6px; border-radius: 10px; text-align: left; border: 2px solid #e3d9cf; background: #fff; color: #2b2220; }
+  .b-tpl img { width: 100%; aspect-ratio: 300 / 293; object-fit: cover; border-radius: 6px; display: block; background: #eee; }
+  .b-tpl span { display: block; font-size: 13px; margin-top: 4px; line-height: 1.25; }
+  .b-tpl.on { border-color: #7e2a2e; box-shadow: 0 0 0 2px #7e2a2e33; }
+  .b-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
+  button { font: inherit; font-size: 14px; padding: 7px 13px; border-radius: 999px; border: 1px solid #7e2a2e; background: #fff; color: #7e2a2e; cursor: pointer; }
+  button.primary { background: #7e2a2e; color: #fff; }
+  button:hover { filter: brightness(.96); }
+  .b-picks label { margin-right: 14px; white-space: nowrap; }
+  textarea { width: 100%; height: 130px; font: 12.5px/1.4 ui-monospace, Menlo, Consolas, monospace; border: 1px solid #d8cdc2; border-radius: 6px; padding: 8px; }
+  .b-status { color: #6b5b52; font-size: 13px; margin: 0 0 8px; }
+  .iv-actions { display: none; }
+  @media (max-width: 900px) { .b-grid { grid-template-columns: 1fr; } .b-side { position: static; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Invitation builder</h1>
+  <p>Names, dates, venue and family details come from your Google Sheet tabs. Use this page to try fonts, sizes, colours and images and see the invite update live, then press Save to sheet. Nothing is written to your sheet until you do.</p>
+</header>
+
+<main class="b-grid">
+  <aside class="b-panel" id="panel"><p class="b-hint">Loading your sheet…</p></aside>
+  <section class="b-side">
+    <div class="b-card b-picks"><strong>Preview for a guest invited to:</strong> <span id="picks"></span></div>
+    <div id="invitation-embed" style="display:block"></div>
+    <div class="b-card">
+      <strong>Your changes</strong>
+      <p class="b-status" id="status">No changes yet.</p>
+      <textarea id="out" readonly placeholder="Rows to paste into the Settings tab will appear here."></textarea>
+      <div class="b-chips">
+        <button class="primary" id="save" type="button">Save to sheet</button>
+        <button id="copy" type="button">Copy for Settings tab</button>
+        <button id="dl" type="button">Download CSV</button>
+        <button id="reset" type="button">Undo all changes</button>
+      </div>
+      <p class="b-status" id="saveMsg"></p>
+      <p class="b-hint">"Save to sheet" writes your changes into the Settings tab for you (it asks for your passcode the first time). Prefer to do it by hand? Paste the copied rows: in your Settings tab, paste into the first empty Key cell: the two columns (Key, Value) fill in. If a Key already exists higher up, the lower row wins.</p>
+    </div>
+  </section>
+</main>
+
+<datalist id="fonts"></datalist>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="config.js"></script>
+<script src="settings.js?v=3"></script>
+<script src="invite.js?v=6"></script>
+<script>
+(async function () {
+  const D = renderGeneratedInvite.defaults, DEF = D.DEF, TEXT = D.TEXT;
+  const sheet = await loadSettings();
+  const base = Object.assign({}, TEXT, sheet);          // what the site uses today
+  // template sets
+  let tplIds = ["marigold"];
+  try { const r = await fetch("templates/index.json", { cache: "no-cache" }); if (r.ok) tplIds = (await r.json()).templates || tplIds; } catch (e) {}
+  const tplList = [];
+  for (const id of tplIds) { const T = await renderGeneratedInvite.loadTemplate(id); tplList.push({ id: T._id, name: T.name || id, desc: T.description || "", artist: T.artist || "" }); }
+  let tplS = {};
+  const loadTpl = async id => { tplS = renderGeneratedInvite.templateSettings(await renderGeneratedInvite.loadTemplate(id)); };
+  await loadTpl(sheet.InviteTemplate);
+  const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  const FONTS = ["display", "body", "DM Serif Display", "Cormorant Garamond", "Playfair Display", "EB Garamond", "Cinzel", "Lora", "Libre Baskerville", "Bodoni Moda", "Marcellus", "Gilda Display", "Italiana", "Rufina", "Yeseva One", "Abril Fatface", "Great Vibes", "Allura", "Pinyon Script", "Alex Brush", "Sacramento", "Montserrat", "Lato", "Josefin Sans", "Raleway", "Poppins", "Karla"];
+  document.getElementById("fonts").innerHTML = FONTS.map(f => "<option value=\"" + f + "\">").join("");
+
+  // Only the text people actually style: names, event names, venue. Everything else keeps the template's look.
+  const NAMES = { CoverNames: "Names on the cover", FamilyCouple: "Couple's full names (family page)", FamilyParents: "Parents' names",
+    EventTitle: "Event names", CoverVenue: "Venue on the cover", FamilyWhere: "Venue line (family page)", SoloWhere: "Venue line (single-event page)", VenueName: "Venue (venue page)" };
+  const GROUPS = [["Names", ["CoverNames", "FamilyCouple", "FamilyParents"]], ["Event names", ["EventTitle"]], ["Venue", ["CoverVenue", "FamilyWhere", "SoloWhere", "VenueName"]]];
+
+  // ---- every control: key, label, type, default, group ----
+  const items = [];
+  const add = (key, label, type, def, group, extra) => items.push(Object.assign({ key, label, type, def: String(def), group }, extra || {}));
+  add("InviteTemplate", "Template set", "text", "marigold", "Template");
+  add("InviteFontDisplay", "Heading font", "font", TEXT.InviteFontDisplay, "Fonts & size");
+  add("InviteFontBody", "Body font", "font", TEXT.InviteFontBody, "Fonts & size");
+  add("InviteSizeScale", "Overall text size (1 = as designed)", "number", 1, "Fonts & size", { step: .05 });
+  [["InviteCoverBg", "Cover background image"], ["InviteSceneImage", "Illustration page image"], ["InviteBackBg", "Back cover image"]]
+    .forEach(a => add(a[0], a[1], "text", "", "Images"));
+  add("InviteCardBg", "Card background", "color", "#ffe4c6", "Card colours");
+  add("InviteCardBorder", "Card border", "color", "#b2705f", "Card colours");
+  add("InviteRuleColor", "Divider line between events", "color", "#d9a98f", "Card colours");
+  add("InviteShowScene", "Show illustration page", "select", "Yes", "Pages", { options: ["Yes", "No"] });
+  add("InviteShowBackCover", "Show back cover", "select", "Yes", "Pages", { options: ["Yes", "No"] });
+  add("InviteSoloCombine", "One event: combine family + event on one page", "select", "Yes", "Pages", { options: ["Yes", "No"] });
+  add("InviteVenueBlock", "Venue block", "select", "auto", "Pages", { options: ["auto", "yes", "no"] });
+  add("InviteParentOrder", "Parents listed", "select", "father", "Pages", { options: ["father", "sheet"] });
+  add("InviteMode", "Invitation source", "select", "generated", "Pages", { options: ["generated", "auto", "pdf"] });
+  GROUPS.forEach(g => g[1].forEach(k => {
+    const d = DEF[k];
+    add("Invite" + k + "_Font", "Font", "font", d.f, g[0], { el: k });
+    add("Invite" + k + "_Size", "Size", "number", d.s, g[0], { el: k, step: .5 });
+    add("Invite" + k + "_Color", "Colour", "color", d.c, g[0], { el: k });
+    add("Invite" + k + "_Style", "Italic", "italic", d.i ? "italic" : "normal", g[0], { el: k });
+  }));
+
+  const baseline = it => String(sheet[it.key] !== undefined && sheet[it.key] !== "" ? sheet[it.key]
+    : tplS[it.key] !== undefined ? tplS[it.key] : (base[it.key] !== undefined ? base[it.key] : it.def));
+  const vals = {}; items.forEach(it => { vals[it.key] = baseline(it); });
+  // ---- remember changes in this browser (survives refresh) ----
+  // Keys include this site's folder name, because every site on the same github.io address
+  // shares one browser storage and drafts/passcodes must not leak from one site to another.
+  const NS = location.pathname.replace(/[^A-Za-z0-9]+/g, "_");
+  const STORE = "inviteBuilder.v1." + NS;
+  const store = {
+    read() { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; } },
+    write(o) { try { localStorage.setItem(STORE, JSON.stringify(o)); } catch (e) {} }
+  };
+  const saved = store.read();
+  if (saved.template && saved.template !== vals.InviteTemplate) { vals.InviteTemplate = saved.template; await loadTpl(saved.template); items.forEach(it => { if (it.key !== "InviteTemplate") vals[it.key] = baseline(it); }); }
+  items.forEach(it => { if (it.key !== "InviteTemplate" && saved.vals && saved.vals[it.key] !== undefined) vals[it.key] = String(saved.vals[it.key]); });
+  const byKey = {}; items.forEach(it => { byKey[it.key] = it; });
+  const hex = v => /^#[0-9a-f]{6}$/i.test(v) ? v : "#000000";
+
+  function ctl(it) {
+    const k = it.key, v = vals[k], a = ' data-key="' + k + '"';
+    if (it.type === "color") return '<span class="b-col"><input type="color"' + a + ' value="' + hex(v) + '"><input type="text" class="b-hex"' + a + ' value="' + esc(v) + '"></span>';
+    if (it.type === "number") return '<input type="number" class="b-num"' + a + ' step="' + (it.step || 1) + '" value="' + esc(v) + '">';
+    if (it.type === "font") return '<input type="text" class="b-font" list="fonts"' + a + ' value="' + esc(v) + '">';
+    if (it.type === "italic") return '<input type="checkbox"' + a + (v === "italic" ? " checked" : "") + '>';
+    if (it.type === "select") {
+      const cur = it.options.filter(o => o.toLowerCase() === v.toLowerCase())[0] || v;
+      return '<select' + a + '>' + it.options.map(o => '<option' + (o === cur ? " selected" : "") + '>' + o + '</option>').join("") + '</select>';
+    }
+    return '<input type="text" class="b-txt"' + a + ' value="' + esc(v) + '">';
+  }
+  function buildPanel() {
+    const order = ["Template", "Fonts & size", "Images", "Card colours", "Pages"].concat(GROUPS.map(g => g[0]));
+    let h = '<div class="b-chips"><span class="b-hint" style="margin:6px 0 0">Starting points:</span>' +
+      '<button type="button" data-preset="Classic">Classic serif</button><button type="button" data-preset="Elegant">Elegant caps</button>' +
+      '<button type="button" data-preset="Modern">Modern</button></div>' +
+      '<p class="b-hint">Presets change fonts and overall size only. The cover, illustration and back cover artwork stay as they are until you add your own images.</p>';
+    order.forEach(g => {
+      const list = items.filter(i => i.group === g);
+      if (!list.length) return;
+      let inner = "";
+      if (g === "Template") {
+        const cur = (vals.InviteTemplate || "marigold").toLowerCase();
+        inner = '<p class="b-hint">A template set is a complete look: artwork, fonts and colours that were designed together. Pick one, then fine-tune below.</p><div class="b-tpls">' +
+          tplList.map(t => '<button type="button" class="b-tpl' + (t.id === cur ? " on" : "") + '" data-tpl="' + esc(t.id) + '" title="' + esc(t.desc) + '"><img src="templates/' + esc(t.id) + '/thumb.jpg" alt=""><span>' + esc(t.name) + (t.artist ? '<br><small>' + esc(t.artist) + '</small>' : "") + '</span></button>').join("") + "</div>";
+      } else if (g === "Images") inner += '<p class="b-hint">These show the files of the chosen template set. Paste a share link ("Anyone with the link" for Google Drive) to replace one. Best size 1180 x 1152 px with no text on it.</p>';
+      if (g === "Template") { /* gallery only */ }
+      else if (list[0].el) {
+        const els = [...new Set(list.map(i => i.el))];
+        inner += els.map(e => '<div class="b-el"><strong>' + esc(NAMES[e] || e) + '</strong><div class="b-ctls">' +
+          list.filter(i => i.el === e).map(i => '<label>' + i.label + ' ' + ctl(i) + '</label>').join("") + '</div></div>').join("");
+      } else {
+        inner += list.map(i => '<div class="b-row"><span class="b-lab">' + esc(i.label) + '</span>' + ctl(i) + '</div>').join("");
+      }
+      h += '<details' + (g === "Template" ? " open" : "") + '><summary>' + g + '</summary>' + inner + '</details>';
+    });
+    document.getElementById("panel").innerHTML = h;
+  }
+  buildPanel();
+
+  // ---- events to preview ----
+  const evText = await (await fetch(CONFIG.EVENTS_CSV_URL, { cache: "no-store" })).text();
+  const events = Papa.parse(evText, { header: true, skipEmptyLines: true }).data.filter(e => e.ID && String(e.ID).trim().charAt(0) !== "<");
+  const picks = document.getElementById("picks");
+  picks.innerHTML = events.map(e => '<label><input type="checkbox" value="' + esc(e.ID) + '" checked> ' + esc(e.Name || e.ID) + '</label>').join("");
+
+  if (saved.picks) picks.querySelectorAll("input").forEach(i => { i.checked = saved.picks.indexOf(i.value) > -1; });
+  const changed = () => items.filter(it => String(vals[it.key]) !== baseline(it));
+  const dateOf = e => { const d = new Date(e.Date); return isNaN(d) ? 0 : +d; };
+  async function draw() {
+    const on = [...picks.querySelectorAll("input:checked")].map(i => i.value);
+    const chosen = events.filter(e => on.indexOf(e.ID) > -1).sort((a, b) => dateOf(a) - dateOf(b));
+    const eff = Object.assign({}, sheet);
+    changed().forEach(it => { eff[it.key] = vals[it.key]; });
+    const old = document.querySelector(".iv-deck"), left = old ? old.scrollLeft : 0;
+    await renderGeneratedInvite({ container: document.getElementById("invitation-embed"), events: chosen, settings: eff });
+    const nd = document.querySelector(".iv-deck");
+    if (nd && left) nd.scrollLeft = left;
+  }
+  let timer;
+  function refresh() {
+    clearTimeout(timer); timer = setTimeout(draw, 220);
+    const ch = changed();
+    document.getElementById("status").textContent = ch.length ? ch.length + " setting" + (ch.length > 1 ? "s" : "") + " changed from what your site uses today." : "No changes yet.";
+    document.getElementById("out").value = ch.map(it => it.key + "\t" + vals[it.key]).join("\n");
+    const o = { vals: {}, template: vals.InviteTemplate, picks: [...picks.querySelectorAll("input:checked")].map(i => i.value) };
+    ch.forEach(it => { o.vals[it.key] = vals[it.key]; });
+    store.write(o);
+  }
+  function setVal(k, v) {
+    vals[k] = String(v);
+    document.querySelectorAll('[data-key="' + k + '"]').forEach(o => {
+      if (o.type === "checkbox") o.checked = v === "italic";
+      else if (o.type === "color") { if (/^#[0-9a-f]{6}$/i.test(v)) o.value = v; }
+      else o.value = v;
+    });
+  }
+  document.getElementById("panel").addEventListener("input", e => {
+    const el = e.target, k = el.dataset.key;
+    if (!k) return;
+    setVal(k, el.type === "checkbox" ? (el.checked ? "italic" : "normal") : el.value);
+    refresh();
+  });
+  picks.addEventListener("change", refresh);
+
+  async function chooseTemplate(id) {
+    const old = {}; items.forEach(it => { old[it.key] = baseline(it); });
+    vals.InviteTemplate = id; await loadTpl(id);
+    items.forEach(it => { if (it.key !== "InviteTemplate" && vals[it.key] === old[it.key]) setVal(it.key, baseline(it)); });
+    document.querySelectorAll(".b-tpl").forEach(b => b.classList.toggle("on", b.dataset.tpl === id));
+    refresh();
+  }
+  document.getElementById("panel").addEventListener("click", e => {
+    const b = e.target.closest && e.target.closest("[data-tpl]");
+    if (b) chooseTemplate(b.dataset.tpl);
+  });
+  const PRESETS = { Classic: ["Playfair Display", "EB Garamond", 0.95], Elegant: ["Cinzel", "Cormorant Garamond", 0.9], Modern: ["Montserrat", "Lato", 0.85] };
+  document.getElementById("panel").addEventListener("click", e => {
+    const p = e.target.dataset && e.target.dataset.preset;
+    if (!p) return;
+    setVal("InviteFontDisplay", PRESETS[p][0]); setVal("InviteFontBody", PRESETS[p][1]); setVal("InviteSizeScale", PRESETS[p][2]);
+    refresh();
+  });
+  document.getElementById("reset").addEventListener("click", () => { items.forEach(it => setVal(it.key, baseline(it))); refresh(); });
+  document.getElementById("copy").addEventListener("click", async e => {
+    const out = document.getElementById("out"); out.select();
+    try { await navigator.clipboard.writeText(out.value); } catch (err) { document.execCommand("copy"); }
+    e.target.textContent = "Copied"; setTimeout(() => { e.target.textContent = "Copy for Settings tab"; }, 1600);
+  });
+  document.getElementById("dl").addEventListener("click", () => {
+    const q = s => '"' + String(s).replace(/"/g, '""') + '"';
+    const csv = "Key,Value\n" + changed().map(it => q(it.key) + "," + q(vals[it.key])).join("\n") + "\n";
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "invite-settings.csv"; a.click();
+  });
+  const PASS_KEY = "inviteBuilder.pass." + NS;
+  document.getElementById("save").addEventListener("click", async e => {
+    const btn = e.currentTarget, msg = document.getElementById("saveMsg");
+    const ch = changed();
+    if (!ch.length) { msg.textContent = "Nothing to save: the sheet already matches what you see."; return; }
+    if (!CONFIG.RSVP_ENDPOINT_URL || /^PASTE_/.test(CONFIG.RSVP_ENDPOINT_URL)) { msg.textContent = "Saving needs the Apps Script web app address (RSVP_ENDPOINT_URL in config.js)."; return; }
+    let pass = ""; try { pass = localStorage.getItem(PASS_KEY) || ""; } catch (x) {}
+    if (!pass) { pass = (prompt("Enter your invite passcode (the INVITE_ADMIN_PASSCODE you set in Apps Script):") || "").trim(); if (!pass) return; }
+    btn.disabled = true; btn.textContent = "Saving…"; msg.textContent = "";
+    const payload = { mode: "inviteSettings", passcode: pass, settings: {} };
+    ch.forEach(it => { payload.settings[it.key] = vals[it.key]; });
+    try {
+      const res = await fetch(CONFIG.RSVP_ENDPOINT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+      const j = await res.json();
+      if (j.status === "ok") {
+        try { localStorage.setItem(PASS_KEY, pass); } catch (x) {}
+        Object.keys(payload.settings).forEach(k => { sheet[k] = payload.settings[k]; });
+        msg.textContent = "Saved to your Settings tab (" + (j.replaced || 0) + " replaced, " + (j.added || 0) + " added). The live site can take a minute or two to show it.";
+        refresh();
+      } else {
+        if (/passcode/i.test(j.message || "")) { try { localStorage.removeItem(PASS_KEY); } catch (x) {} }
+        msg.textContent = "Not saved: " + (j.message || "unknown error");
+      }
+    } catch (err) {
+      msg.textContent = "Couldn't confirm the save. Check your Settings tab; if the rows aren't there, use Copy for Settings tab.";
+    } finally { btn.disabled = false; btn.textContent = "Save to sheet"; }
+  });
+  refresh(); draw();
+})();
+</script>
+</body>
+</html>

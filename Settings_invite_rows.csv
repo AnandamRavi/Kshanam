@@ -1,4 +1,5 @@
 Key,Value,What it does
+InviteTemplate,marigold,"Which template set to use (a folder name inside templates/). Fonts, colours and artwork come from the set; any other row here overrides it"
 InviteMode,generated,"generated = build invites from the sheet (default); auto = use a PDF from the Invitations tab if one matches, else build; pdf = old behaviour"
 InviteName1,Raj,"Cover first name, left/top (blank = first word of the Bridegroom row in Party)"
 InviteName2,Simran,"Cover first name, second (blank = first word of the Bride row in Party)"
@@ -16,15 +17,21 @@ InviteBlessing,,"Optional line at the top of the family page, e.g. || Om Ganapat
 InviteVenue,,"Optional venue line (blank = the location shared by the guest's events, else VenueDetails)"
 InviteClosing,,Closing line on venue block and back cover (blank = FooterText)
 InviteVenueBlock,auto,auto / yes / no. auto shows the venue block only when it fits under an odd number of events
+InviteSoloCombine,Yes,Yes = a guest with one event gets the family details and event details on a single page (as in Invitation_Wedding.pdf); No = separate pages
 InviteShowScene,Yes,Yes/No: the full-page illustration after the cover
 InviteShowBackCover,Yes,Yes/No: the back cover
-InviteCoverBg,,Optional image link (Drive ok) replacing invite/cover-bg.png
-InviteSceneImage,,Optional image link replacing invite/scene.jpg
-InviteBackBg,,Optional image link replacing invite/back-bg.png
+InviteCoverBg,,Optional image link replacing the template's cover image
+InviteSceneImage,,Optional image link replacing the template's illustration page
+InviteBackBg,,Optional image link replacing the template's back cover
 InviteFontDisplay,DM Serif Display,Google Font used for headings/names (any name from fonts.google.com)
 InviteFontBody,Cormorant Garamond,Google Font used for body text
+InviteSizeScale,1,Multiplies every text size (0.9 = 10% smaller). Handy after changing fonts
+InviteCardBg,#ffe4c6,Background colour of the cream pages
+InviteCardBorder,#b2705f,Border colour of the cream pages
+InviteRuleColor,#d9a98f,Divider line between two events on a page
 InviteIntroText,You are cordially invited to the wedding of,Wording on the invite
-InviteRequestText,request the pleasure of your company at the wedding of their children,Wording on the invite
+InviteRequestText,request the pleasure of your company at {event} of their children,Wording of the request line. {event} is replaced by the event(s) the guest is invited to (see InviteRequestPhrase in the Events tab)
+InviteMainEvent,WEDDING,"ID of the main event. A guest invited to it (plus others) sees its phrase, e.g. ""the wedding"""
 InviteJoyText,With their joy shared by,Wording on the invite
 InviteAndText,and,Wording on the invite
 InviteWhenPrefix,On,Wording on the invite
@@ -85,6 +92,18 @@ InviteFamilyWhen_Color,#7e2a2e,"Family page: ""On <dates>"" - colour"
 InviteFamilyWhere_Font,body,"Family page: ""At <venue>"" - font: display, body, or any Google Font name"
 InviteFamilyWhere_Size,15.8,"Family page: ""At <venue>"" - size in points on a 590 pt wide card"
 InviteFamilyWhere_Color,#6b2f2a,"Family page: ""At <venue>"" - colour"
+InviteSoloDate_Font,display,"Single-event page: date line - font: display, body, or any Google Font name"
+InviteSoloDate_Size,23.2,Single-event page: date line - size in points on a 590 pt wide card
+InviteSoloDate_Color,#7e2a2e,Single-event page: date line - colour
+InviteSoloTime_Font,body,"Single-event page: time - font: display, body, or any Google Font name"
+InviteSoloTime_Size,16.5,Single-event page: time - size in points on a 590 pt wide card
+InviteSoloTime_Color,#8a6a60,Single-event page: time - colour
+InviteSoloWhere_Font,body,"Single-event page: venue line - font: display, body, or any Google Font name"
+InviteSoloWhere_Size,16.5,Single-event page: venue line - size in points on a 590 pt wide card
+InviteSoloWhere_Color,#6b2f2a,Single-event page: venue line - colour
+InviteSoloAttire_Font,body,"Single-event page: attire - font: display, body, or any Google Font name"
+InviteSoloAttire_Size,14.2,Single-event page: attire - size in points on a 590 pt wide card
+InviteSoloAttire_Color,#8a6a60,Single-event page: attire - colour
 InviteEventLabel_Font,body,"Event: small label (THE MEHNDI) - font: display, body, or any Google Font name"
 InviteEventLabel_Size,12,Event: small label (THE MEHNDI) - size in points on a 590 pt wide card
 InviteEventLabel_Color,#e8741e,Event: small label (THE MEHNDI) - colour

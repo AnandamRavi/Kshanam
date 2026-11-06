@@ -7,7 +7,7 @@ A guest with one event gets a shorter invitation; two events get no separate ven
 
 ## Files added or changed
 - `invite.js`, `invite.css` - the generator
-- `invite/` - artwork taken from your PDF (cover-bg.png, scene.jpg, back-bg.png, ornament.png, icon-<eventid>.png)
+- `templates/` - template sets. `templates/marigold/` is your original look (artwork taken from your PDF); `templates/sage-gold/` is a simple placeholder set; `templates/index.json` lists the sets shown in the builder
 - `index.html`, `script.js` - load the generator and call it. `script.js` has a small block labelled InviteMode.
 - `invite-preview.html` - tick any combination of events and see the invite, no guest code needed
 - `Settings_invite_rows.csv` - every new Settings key with its default (paste what you want into the Settings tab)
@@ -16,7 +16,8 @@ A guest with one event gets a shorter invitation; two events get no separate ven
 **Events tab** - add these columns at the far right (all optional):
 - `InviteLabel` - small caps line above the title, e.g. THE MEHNDI
 - `InviteDescription` - short blurb for the invite. If blank, the first line of `Description` is used.
-- `InviteIcon` - image link for the round icon. If blank, `invite/icon-<ID in lowercase>.png` is used.
+- `InviteRequestPhrase` - how the request line names this event, e.g. "the Mehndi function", "the wedding", "the wedding reception". If blank, built-in phrases are used for MEHNDI, WEDDING and RECEPTION, otherwise "the <event name>".
+- `InviteIcon` - image link for the round icon. If blank, the chosen template's `icon-<ID in lowercase>.png` is used.
 
 **Wedding Party tab** - names are found from the Role column:
 - Bridegroom / Bride: full names on the family page; first words on the cover
@@ -39,3 +40,13 @@ Font = `display`, `body` or any Google Font name. Size is in points on a 590 pt 
 - Dates and times are read as they appear in the published CSV ("February 13, 2027", "17:00"), and shown as "Saturday, February 13th, 2027" and "5:00 PM onwards".
 - Fonts load from Google Fonts, so the guest needs a connection. Browsers from 2023 onwards are supported (container query units).
 - The Wedding Party names are used exactly as written, so `Lajwanti "Lajjo" Singh` shows the nickname; use `InviteBrideParents` for the plain form.
+
+## The request line
+The family page says "request the pleasure of your company at {event} of their children". One event: that event's phrase (Mehndi only: "the Mehndi function"; Reception only: "the wedding reception"). Several events including the one named in `InviteMainEvent` (default WEDDING): "the wedding". Several events without it: the phrases joined with "and". If you already pasted your own `InviteRequestText` into Settings, add `{event}` where the event should appear.
+
+## Invitation builder (invite-builder.html)
+Open `<your site>/invite-builder.html` (not linked from the menu). It reads your sheet, shows the invite live for any combination of events, and lets you try fonts, sizes, colours, card colours, images and page options. "Copy for Settings tab" gives only the rows you changed (Key and Value, tab separated); paste them into the first empty Key cell of the Settings tab. Nothing is saved from the builder itself; guests' invites change only after the rows are in the sheet. If a Key already exists higher up, the lower row wins.
+Presets (Classic serif, Elegant caps, Modern) change the fonts and overall size only. `InviteSizeScale` resizes all text at once after a font change.
+
+## Template sets
+A set is a folder in `templates/` holding text-free artwork plus a `template.json` (fonts, colours, text overrides). Choose one with `InviteTemplate` in the Settings tab, or by clicking it in the builder's gallery. Priority: your Settings rows, then the set, then the built-in defaults. See `TEMPLATE-BRIEF.md` for the brief to give an illustrator and how to add a set.
