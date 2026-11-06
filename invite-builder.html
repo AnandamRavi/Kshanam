@@ -75,12 +75,11 @@
   </section>
 </main>
 
-<datalist id="fonts"></datalist>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="config.js"></script>
 <script src="settings.js?v=3"></script>
-<script src="invite.js?v=7"></script>
+<script src="invite.js?v=8"></script>
 <script>
 (async function () {
   const D = renderGeneratedInvite.defaults, DEF = D.DEF, TEXT = D.TEXT;
@@ -101,8 +100,31 @@
   const loadTpl = async id => { tplS = renderGeneratedInvite.templateSettings(await renderGeneratedInvite.loadTemplate(id)); };
   await loadTpl(sheet.InviteTemplate);
   const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-  const FONTS = ["display", "body", "DM Serif Display", "Cormorant Garamond", "Playfair Display", "EB Garamond", "Cinzel", "Lora", "Libre Baskerville", "Bodoni Moda", "Marcellus", "Gilda Display", "Italiana", "Rufina", "Yeseva One", "Abril Fatface", "Great Vibes", "Allura", "Pinyon Script", "Alex Brush", "Sacramento", "Montserrat", "Lato", "Josefin Sans", "Raleway", "Poppins", "Karla"];
-  document.getElementById("fonts").innerHTML = FONTS.map(f => "<option value=\"" + f + "\">").join("");
+  // Fonts offered in the dropdowns (all free from fonts.google.com). "Type another Google Font…" covers anything else.
+  const FONT_GROUPS = [
+    ["Elegant serif", ["Cormorant Garamond", "Cormorant", "EB Garamond", "Playfair Display", "DM Serif Display", "DM Serif Text", "Libre Baskerville", "Libre Caslon Text", "Lora", "Cardo", "Crimson Text", "Spectral", "Prata", "Bodoni Moda", "Gilda Display", "Rufina", "Marcellus", "Forum", "Bellefair", "Cinzel", "Italiana", "Yeseva One", "Abril Fatface", "Old Standard TT"]],
+    ["Script & calligraphy", ["Great Vibes", "Allura", "Pinyon Script", "Alex Brush", "Sacramento", "Parisienne", "Tangerine", "Dancing Script", "Playball", "Italianno", "Petit Formal Script", "Rouge Script", "Imperial Script", "Birthstone", "Ballet", "WindSong", "Style Script", "Corinthia", "Qwigley", "Euphoria Script", "Herr Von Muellerhoff", "Mrs Saint Delafield", "Monsieur La Doulaise", "Satisfy", "Cookie"]],
+    ["Clean sans-serif", ["Montserrat", "Lato", "Josefin Sans", "Raleway", "Poppins", "Karla", "Jost", "Work Sans", "Nunito Sans", "Tenor Sans", "Quicksand", "Mulish", "DM Sans", "Open Sans"]],
+    ["Display & decorative", ["Cinzel Decorative", "Poiret One", "Limelight", "Federo", "Cormorant SC", "Cormorant Upright", "Playfair Display SC", "Marcellus SC", "Gloock", "Tillana", "Yatra One"]]
+  ];
+  const KNOWN_FONTS = new Set(["display", "body"]); FONT_GROUPS.forEach(g => g[1].forEach(f => KNOWN_FONTS.add(f)));
+  // so each name can be shown in its own typeface: load just the letters of the names (tiny), in small batches
+  (function () {
+    const all = []; FONT_GROUPS.forEach(g => g[1].forEach(f => all.push(f)));
+    const text = encodeURIComponent("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ");
+    for (let i = 0; i < all.length; i += 12) {
+      const l = document.createElement("link"); l.rel = "stylesheet";
+      l.href = "https://fonts.googleapis.com/css?family=" + all.slice(i, i + 12).map(n => n.replace(/ /g, "+")).join("|") + "&text=" + text + "&display=swap";
+      document.head.appendChild(l);
+    }
+  })();
+  const fontStyle = v => (v && v !== "display" && v !== "body") ? ' style="font-family:\'' + esc(v) + '\'"' : "";
+  function fontOptions(cur) {
+    let h = '<optgroup label="Site fonts"><option value="display"' + (cur === "display" ? " selected" : "") + '>Heading font</option><option value="body"' + (cur === "body" ? " selected" : "") + '>Body font</option></optgroup>';
+    if (!KNOWN_FONTS.has(cur)) h += '<optgroup label="Current"><option value="' + esc(cur) + '" selected' + fontStyle(cur) + '>' + esc(cur) + '</option></optgroup>';
+    FONT_GROUPS.forEach(g => { h += '<optgroup label="' + g[0] + '">' + g[1].map(f => '<option value="' + f + '"' + fontStyle(f) + (f === cur ? " selected" : "") + '>' + f + '</option>').join("") + '</optgroup>'; });
+    return h + '<optgroup label="Other"><option value="__other">Type another Google Font…</option></optgroup>';
+  }
 
   // Only the text people actually style: names, event names, venue. Everything else keeps the template's look.
   const NAMES = { CoverNames: "Names on the cover", FamilyCouple: "Couple's full names (family page)", FamilyParents: "Parents' names",
@@ -154,7 +176,7 @@
     const k = it.key, v = vals[k], a = ' data-key="' + k + '"';
     if (it.type === "color") return '<span class="b-col"><input type="color"' + a + ' value="' + hex(v) + '"><input type="text" class="b-hex"' + a + ' value="' + esc(v) + '"></span>';
     if (it.type === "number") return '<input type="number" class="b-num"' + a + ' step="' + (it.step || 1) + '" value="' + esc(v) + '">';
-    if (it.type === "font") return '<input type="text" class="b-font" list="fonts"' + a + ' value="' + esc(v) + '">';
+    if (it.type === "font") return '<select class="b-font"' + a + fontStyle(v) + '>' + fontOptions(v) + '</select>';
     if (it.type === "italic") return '<input type="checkbox"' + a + (v === "italic" ? " checked" : "") + '>';
     if (it.type === "select") {
       const cur = it.options.filter(o => o.toLowerCase() === v.toLowerCase())[0] || v;
@@ -227,13 +249,28 @@
     document.querySelectorAll('[data-key="' + k + '"]').forEach(o => {
       if (o.type === "checkbox") o.checked = v === "italic";
       else if (o.type === "color") { if (/^#[0-9a-f]{6}$/i.test(v)) o.value = v; }
+      else if (o.tagName === "SELECT" && o.classList.contains("b-font")) {
+        if (![...o.options].some(op => op.value === String(v))) o.innerHTML = fontOptions(String(v));
+        o.value = String(v);
+        o.style.fontFamily = (v && v !== "display" && v !== "body") ? "'" + v + "'" : "";
+      }
       else o.value = v;
     });
   }
   document.getElementById("panel").addEventListener("input", e => {
     const el = e.target, k = el.dataset.key;
     if (!k) return;
+    if (el.value === "__other") return;     // "Type another Google Font…": handled by the change listener below
     setVal(k, el.type === "checkbox" ? (el.checked ? "italic" : "normal") : el.value);
+    refresh();
+  });
+  document.getElementById("panel").addEventListener("change", e => {
+    const el = e.target;
+    if (!(el.tagName === "SELECT" && el.classList.contains("b-font") && el.value === "__other")) return;
+    const k = el.dataset.key;
+    const nm = (prompt("Type the exact name of a font from fonts.google.com (for example: Playfair Display):") || "").replace(/[^\w \-]/g, "").trim();
+    if (!nm) { setVal(k, vals[k]); return; }     // cancelled: put the previous font back
+    setVal(k, nm);
     refresh();
   });
   picks.addEventListener("change", refresh);
