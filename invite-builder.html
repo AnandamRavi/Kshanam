@@ -80,7 +80,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="config.js"></script>
 <script src="settings.js?v=3"></script>
-<script src="invite.js?v=6"></script>
+<script src="invite.js?v=7"></script>
 <script>
 (async function () {
   const D = renderGeneratedInvite.defaults, DEF = D.DEF, TEXT = D.TEXT;
@@ -90,7 +90,13 @@
   let tplIds = ["marigold"];
   try { const r = await fetch("templates/index.json", { cache: "no-cache" }); if (r.ok) tplIds = (await r.json()).templates || tplIds; } catch (e) {}
   const tplList = [];
-  for (const id of tplIds) { const T = await renderGeneratedInvite.loadTemplate(id); tplList.push({ id: T._id, name: T.name || id, desc: T.description || "", artist: T.artist || "" }); }
+  const tplMissing = [];   // listed in templates/index.json but their folder or template.json can't be found
+  for (const id of tplIds) {
+    const T = await renderGeneratedInvite.loadTemplate(id);
+    // loadTemplate quietly falls back to Marigold when a folder is missing; don't show that as a second Marigold
+    if (String(T._id) !== String(id).trim().toLowerCase()) { tplMissing.push(id); continue; }
+    tplList.push({ id: T._id, name: T.name || id, desc: T.description || "", artist: T.artist || "" });
+  }
   let tplS = {};
   const loadTpl = async id => { tplS = renderGeneratedInvite.templateSettings(await renderGeneratedInvite.loadTemplate(id)); };
   await loadTpl(sheet.InviteTemplate);
@@ -133,10 +139,7 @@
     : tplS[it.key] !== undefined ? tplS[it.key] : (base[it.key] !== undefined ? base[it.key] : it.def));
   const vals = {}; items.forEach(it => { vals[it.key] = baseline(it); });
   // ---- remember changes in this browser (survives refresh) ----
-  // Keys include this site's folder name, because every site on the same github.io address
-  // shares one browser storage and drafts/passcodes must not leak from one site to another.
-  const NS = location.pathname.replace(/[^A-Za-z0-9]+/g, "_");
-  const STORE = "inviteBuilder.v1." + NS;
+  const STORE = "inviteBuilder.v1";
   const store = {
     read() { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; } },
     write(o) { try { localStorage.setItem(STORE, JSON.stringify(o)); } catch (e) {} }
@@ -171,7 +174,9 @@
       let inner = "";
       if (g === "Template") {
         const cur = (vals.InviteTemplate || "marigold").toLowerCase();
-        inner = '<p class="b-hint">A template set is a complete look: artwork, fonts and colours that were designed together. Pick one, then fine-tune below.</p><div class="b-tpls">' +
+        inner = '<p class="b-hint">A template set is a complete look: artwork, fonts and colours that were designed together. Pick one, then fine-tune below.</p>' +
+          (tplMissing.length ? '<p class="b-hint" style="color:#a3412a">Not found on your site yet: ' + tplMissing.map(esc).join(", ") + '. Check that its folder is uploaded at templates/' + esc(tplMissing[0]) + '/ (with template.json inside) in your GitHub repo.</p>' : "") +
+          '<div class="b-tpls">' +
           tplList.map(t => '<button type="button" class="b-tpl' + (t.id === cur ? " on" : "") + '" data-tpl="' + esc(t.id) + '" title="' + esc(t.desc) + '"><img src="templates/' + esc(t.id) + '/thumb.jpg" alt=""><span>' + esc(t.name) + (t.artist ? '<br><small>' + esc(t.artist) + '</small>' : "") + '</span></button>').join("") + "</div>";
       } else if (g === "Images") inner += '<p class="b-hint">These show the files of the chosen template set. Paste a share link ("Anyone with the link" for Google Drive) to replace one. Best size 1180 x 1152 px with no text on it.</p>';
       if (g === "Template") { /* gallery only */ }
@@ -190,7 +195,7 @@
 
   // ---- events to preview ----
   const evText = await (await fetch(CONFIG.EVENTS_CSV_URL, { cache: "no-store" })).text();
-  const events = Papa.parse(evText, { header: true, skipEmptyLines: true }).data.filter(e => e.ID && String(e.ID).trim().charAt(0) !== "<");
+  const events = Papa.parse(evText, { header: true, skipEmptyLines: true }).data.filter(e => e.ID);
   const picks = document.getElementById("picks");
   picks.innerHTML = events.map(e => '<label><input type="checkbox" value="' + esc(e.ID) + '" checked> ' + esc(e.Name || e.ID) + '</label>').join("");
 
@@ -263,7 +268,7 @@
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "invite-settings.csv"; a.click();
   });
-  const PASS_KEY = "inviteBuilder.pass." + NS;
+  const PASS_KEY = "inviteBuilder.pass";
   document.getElementById("save").addEventListener("click", async e => {
     const btn = e.currentTarget, msg = document.getElementById("saveMsg");
     const ch = changed();
@@ -279,8 +284,10 @@
       const j = await res.json();
       if (j.status === "ok") {
         try { localStorage.setItem(PASS_KEY, pass); } catch (x) {}
-        Object.keys(payload.settings).forEach(k => { sheet[k] = payload.settings[k]; });
-        msg.textContent = "Saved to your Settings tab (" + (j.replaced || 0) + " replaced, " + (j.added || 0) + " added). The live site can take a minute or two to show it.";
+        const failed = j.failed || [];
+        Object.keys(payload.settings).forEach(k => { if (failed.indexOf(k) < 0) sheet[k] = payload.settings[k]; });
+        msg.textContent = "Saved to your Settings tab (" + (j.replaced || 0) + " replaced, " + (j.added || 0) + " added). The live site can take a minute or two to show it." +
+          (failed.length ? " Couldn't save " + failed.length + " setting(s) because those cells are locked: " + failed.join(", ") + ". In your sheet, run RSVP Tools > Build Start Here tab, then press Save to sheet again." : "");
         refresh();
       } else {
         if (/passcode/i.test(j.message || "")) { try { localStorage.removeItem(PASS_KEY); } catch (x) {} }
