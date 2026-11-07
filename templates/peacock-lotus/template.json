@@ -1,0 +1,23 @@
+{
+  "name": "Lotus & Indigo",
+  "description": "Midnight indigo with gold frames and blush lotus flowers; a moonlit lotus-pond scene.",
+  "artist": "Reference set (drawn from simple shapes)",
+  "images": { "cover": "cover-bg.png", "scene": "scene.jpg", "back": "back-bg.png", "ornament": "ornament.png" },
+  "fonts": { "display": "Cinzel", "body": "Cormorant Garamond" },
+  "scale": 0.92,
+  "colors": { "cardBg": "#f7f0e4", "cardBorder": "#b08d3c", "rule": "#d9c48a", "coverBg": "#16264a", "sceneBg": "#2b2350", "backBg": "#16264a" },
+  "css": "style.css",
+  "elements": {
+    "CoverIntro": {"color": "#e9d6a0"}, "CoverNames": {"color": "#f8f1e3"}, "CoverAmp": {"color": "#d4af61"},
+    "CoverDate": {"color": "#e9d6a0"}, "CoverVenue": {"color": "#e9d6a0"},
+    "FamilyBlessing": {"color": "#b5475f"}, "FamilyParents": {"color": "#16264a"}, "FamilyAnd": {"color": "#6b6a80"},
+    "FamilyRequest": {"color": "#2a3a63"}, "FamilyCouple": {"color": "#16264a"}, "FamilyAmp": {"color": "#b08d3c"},
+    "FamilyJoy": {"color": "#6b6a80"}, "FamilyWhen": {"color": "#16264a"}, "FamilyWhere": {"color": "#2a3a63"},
+    "FamilyGrandLabel": {"color": "#6b6a80"}, "FamilyGrandNames": {"color": "#6b6a80"}, "FamilyGrandAnd": {"color": "#6b6a80"},
+    "EventLabel": {"color": "#b5475f"}, "EventTitle": {"color": "#16264a"}, "EventDesc": {"color": "#16264a"},
+    "EventDate": {"color": "#2a3a63"}, "EventTime": {"color": "#6b6a80"}, "EventAttire": {"color": "#6b6a80"},
+    "SoloDate": {"color": "#16264a"}, "SoloTime": {"color": "#6b6a80"}, "SoloWhere": {"color": "#2a3a63"}, "SoloAttire": {"color": "#6b6a80"},
+    "VenueLabel": {"color": "#b5475f"}, "VenueName": {"color": "#16264a"}, "VenueTagline": {"color": "#16264a"},
+    "BackCaption": {"color": "#f8f1e3"}
+  }
+}
